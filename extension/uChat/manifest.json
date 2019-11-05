@@ -1,0 +1,13 @@
+{
+  "name": "µChat",
+  "version": "1.0",
+  "description": "Minimalist chat app",
+  "permissions": ["activeTab"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 2
+}
