@@ -1,5 +1,34 @@
-document.addEventListener('DOMContentLoaded', function() {
-  
+$(document).ready(function() {
+	$('#login-form').submit(function(e) {
+		let username = $('#username').val();
+		let password = $('#password').val();
+		
+		$.ajax({
+			type: 'POST',
+			url: 'http://localhost:8080/login',
+			contentType: 'application/json',
+			crossDomain: true,
+			cache: false,
+			dataType: 'json',
+			data: JSON.stringify({
+				username: username,
+				password: password
+			}),
+			success: function (res) {
+				console.log('done');
+				console.log(res);
+			},
+			error: function (res) {
+				console.log('fail');
+				console.log(res);
+			}
+		});
+		
+		e.preventDefault();
+	});
+});
+
+/*
   var webSocket = new WebSocket("ws://localhost:8080/uChat/api");
   var echoText = document.getElementById("echoText");
   echoText.value = "";
@@ -32,4 +61,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('echo').addEventListener('click', wsSendMessage);
   document.getElementById('disconnect').addEventListener('click', wsCloseConnection);
-}, false);
+*/

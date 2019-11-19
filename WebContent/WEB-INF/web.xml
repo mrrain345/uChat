@@ -9,7 +9,7 @@
   
   <servlet-mapping>
     <servlet-name>Server</servlet-name>
-    <url-pattern>/hello</url-pattern>
+    <url-pattern>/login</url-pattern>
   </servlet-mapping>
   
   <resource-ref>

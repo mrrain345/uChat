@@ -2,9 +2,15 @@
   "name": "µChat",
   "version": "1.0",
   "description": "Minimalist chat app",
-  "permissions": ["activeTab"],
+  "permissions": [
+  	"activeTab",
+  	"http://localhost:8080/"
+  ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "js/jquery.min.js",
+      "js/background.js"
+    ]
   },
   "browser_action": {
     "default_popup": "popup.html"

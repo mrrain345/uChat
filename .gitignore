@@ -1,5 +1,6 @@
-# Server/Database configuration
+# Configuration
 WebContent/META-INF/context.xml
+.classpath
 
 # Compiled class file
 *.class
@@ -14,7 +15,6 @@ WebContent/META-INF/context.xml
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
