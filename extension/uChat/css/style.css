@@ -3,6 +3,10 @@ body {
 	height: 500px;
 }
 
-form {
+.alert:empty {
+	display: none;
+}
+
+.margin-10 {
 	margin: 10px;
 }

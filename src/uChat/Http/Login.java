@@ -1,5 +1,6 @@
-package uChat;
+package uChat.Http;
 
+import uChat.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,6 +8,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.UUID;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -21,37 +24,43 @@ import javax.sql.DataSource;
 
 import com.google.gson.Gson;
 
-@WebServlet("/Server")
-public class Server extends HttpServlet {
-	
-    public Server() {
+@WebServlet("/login/*")
+public class Login extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	public Login() {
         super();
     }
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Content-Type", "application/json");
+		if (request.getRequestURI().split("/").length != 2) { response.setStatus(404); return; }
+		
 		PrintWriter out = response.getWriter();
 		out.println("{ \"message\": \"Hello world!\" }");
-		
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Content-Type", "application/json");
+		if (request.getRequestURI().split("/").length != 2) { response.setStatus(404); return; }
 		
 		try {
 			BufferedReader reader = request.getReader();
 			Gson gson = new Gson();
 			LoginJson login = gson.fromJson(reader, LoginJson.class);
-			User user = User.authenticate(login);
+			User user = Users.authenticate(login);
 			
-			if (user != null) System.out.println(user + ": " + user.getSessionID());
+			if (user != null) System.out.println(user);
 			else System.out.println("Authentication failed, " + login.getUsername() + " " + login.getPassword());
 			
 			ServletOutputStream out = response.getOutputStream();
+			List<UUID> sessions = user.getSessions();
 			if (user == null) out.println("{ \"login\": false }");
-			else out.println("{ \"login\": true, \"session_id\": \"" + user.getSessionID() + "\" }");
+			else out.println("{ \"login\": true, \"session_id\": \"" + sessions.get(sessions.size()-1) + "\" }");
 			
 		} catch(Exception e) {
 			PrintWriter out = response.getWriter();
@@ -61,4 +70,20 @@ public class Server extends HttpServlet {
 		}
 	}
 
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Content-Type", "application/json");
+		if (request.getRequestURI().split("/").length != 3) { response.setStatus(404); return; }
+		
+		String[] uri = request.getRequestURI().split("/");
+		try {
+			UUID session = UUID.fromString(uri[2]);
+			User user = Users.findUser(session);
+			if (user != null) user.logout(session);
+			else System.out.println("User doesn't exist");
+		} catch (IllegalArgumentException e) {
+			response.setStatus(400);
+		}
+	}
 }

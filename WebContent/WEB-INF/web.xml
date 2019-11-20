@@ -3,14 +3,9 @@
   <display-name>uChat</display-name>
   
   <servlet>
-    <servlet-name>Server</servlet-name>
-    <servlet-class>uChat.Server</servlet-class>
+    <servlet-name>login</servlet-name>
+    <servlet-class>uChat.Http.Login</servlet-class>
   </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>Server</servlet-name>
-    <url-pattern>/login</url-pattern>
-  </servlet-mapping>
   
   <resource-ref>
     <description>Database connection</description>
