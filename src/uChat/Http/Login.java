@@ -54,14 +54,16 @@ public class Login extends HttpServlet {
 			LoginJson login = gson.fromJson(reader, LoginJson.class);
 			User user = Users.authenticate(login);
 			
-			if (user != null) System.out.println(user);
-			else System.out.println("Authentication failed, " + login.getUsername() + " " + login.getPassword());
+			PrintWriter out = response.getWriter();
 			
-			ServletOutputStream out = response.getOutputStream();
-			List<UUID> sessions = user.getSessions();
-			if (user == null) out.println("{ \"login\": false }");
-			else out.println("{ \"login\": true, \"session_id\": \"" + sessions.get(sessions.size()-1) + "\" }");
-			
+			if (user != null) {
+				System.out.println(user);
+				List<UUID> sessions = user.getSessions();
+				out.println("{ \"login\": true, \"session_id\": \"" + sessions.get(sessions.size()-1) + "\" }");
+			} else {
+				System.out.println("Authentication failed, " + login.getUsername() + " " + login.getPassword());
+				out.println("{ \"login\": false }");
+			}
 		} catch(Exception e) {
 			PrintWriter out = response.getWriter();
 			out.println("{ \"error\": \"" + e.getMessage() + "\", \"stacktrace\": \"");
