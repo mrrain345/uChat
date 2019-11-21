@@ -3,9 +3,9 @@ package uChat.Command;
 import java.util.Date;
 import uChat.CommandCode;
 
-public class ServerSync implements ICommand {
+public class ServerAddUser implements ICommand {
 	private static final long serialVersionUID = 1L;
-	public CommandCode getCode() { return CommandCode.SERVER_SYNC; }
+	public CommandCode getCode() { return CommandCode.SERVER_ADD_USER; }
 	
 	private int server_id;
 	private Date timestamp;
