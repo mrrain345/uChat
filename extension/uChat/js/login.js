@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	chrome.storage.local.get("sessionID", function(result){
+	chrome.storage.local.get("sessionID", function(result) {
 	    if (result.sessionID !== undefined) window.location = '/index.html';
 	});
 	

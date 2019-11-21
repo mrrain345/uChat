@@ -11,6 +11,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import uChat.Json.LoginJson;
+
 public class Users {
 	private static List<User> users;
 	

@@ -1,4 +1,4 @@
-package uChat;
+package uChat.Json;
 
 import java.io.Serializable;
 
