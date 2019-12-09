@@ -1,5 +1,8 @@
 package uChat.Command;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import uChat.CommandCode;
 
 public class FriendAdd implements ICommand {
@@ -8,11 +11,15 @@ public class FriendAdd implements ICommand {
 
 	private String username;
 	
-	public String getUsername() {
-		return username;
-	}
+	public String getUsername() { return username; }
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(String username) { this.username = username; }
+	
+	public static FriendAdd initialize(JsonElement data) {
+		return new Gson().fromJson(data, FriendAdd.class);
+	}
+	
+	public String execute() {
+		return null;
 	}
 }

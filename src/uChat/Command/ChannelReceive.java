@@ -1,5 +1,8 @@
 package uChat.Command;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import uChat.CommandCode;
 
 public class ChannelReceive implements ICommand {
@@ -11,28 +14,21 @@ public class ChannelReceive implements ICommand {
 	private int sender_id;
 	private String message;
 	
-	public int getServerID() {
-		return server_id;
+	public int getServerID() { return server_id; }
+	public int getChannelID() { return channel_id; }
+	public int getSenderID() { return sender_id; }
+	public String getMessage() { return message; }
+	
+	public void setServerID(int server_id) { this.server_id = server_id; }
+	public void setChannelID(int channel_id) { this.channel_id = channel_id; }
+	public void setSenderID(int sender_id) { this.sender_id = sender_id; }
+	public void setMessage(String message) { this.message = message; }
+	
+	public static ChannelReceive initialize(JsonElement data) {
+		return new Gson().fromJson(data, ChannelReceive.class);
 	}
-	public void setServerID(int server_id) {
-		this.server_id = server_id;
-	}
-	public int getChannelID() {
-		return channel_id;
-	}
-	public void setChannelID(int channel_id) {
-		this.channel_id = channel_id;
-	}
-	public int getSenderID() {
-		return sender_id;
-	}
-	public void setSenderID(int sender_id) {
-		this.sender_id = sender_id;
-	}
-	public String getMessage() {
-		return message;
-	}
-	public void setMessage(String message) {
-		this.message = message;
+	
+	public String execute() {
+		return null;
 	}
 }

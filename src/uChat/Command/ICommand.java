@@ -5,4 +5,5 @@ import uChat.CommandCode;
 
 public interface ICommand extends Serializable {
 	public CommandCode getCode();
+	public String execute();
 }

@@ -52,8 +52,9 @@ public class Login extends HttpServlet {
 				System.out.println(user);
 				List<UUID> sessions = user.getSessions();
 				out.println("{ \"login\": true, \"session_id\": \"" + sessions.get(sessions.size()-1) + "\" }");
+				System.out.printf("[SESSION CREATED] username: \"%s\", session: \"%s\"\n", user.getUsername(), sessions.get(sessions.size()-1));
 			} else {
-				System.out.println("Authentication failed, " + login.getUsername() + " " + login.getPassword());
+				System.out.printf("[Authentication failed] username: \"%s\"\n", login.getUsername());
 				out.println("{ \"login\": false }");
 			}
 		} catch(Exception e) {
@@ -74,8 +75,10 @@ public class Login extends HttpServlet {
 		try {
 			UUID session = UUID.fromString(uri[2]);
 			User user = Users.findUser(session);
-			if (user != null) user.logout(session);
-			else System.out.println("User doesn't exist");
+			if (user != null) {
+				user.logout(session);
+				System.out.printf("[SESSION CLOSED] username: \"%s\", session: \"%s\"\n", user.getUsername(), session);
+			}
 		} catch (IllegalArgumentException e) {
 			response.setStatus(400);
 		}

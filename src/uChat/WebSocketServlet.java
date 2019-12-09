@@ -33,12 +33,8 @@ public class WebSocketServlet {
 		
 		Gson gson = new Gson();
 		CommandJson cmd = gson.fromJson(message, CommandJson.class);
+		System.out.printf("[%s] session: %s\n  %s\n", cmd.getCode(), cmd.getSessionID(), cmd.getData());
 		
-		System.out.println(cmd.getSessionID());
-		System.out.println(cmd.getCode());
-		System.out.println(cmd.getData());
-		
-		
-		return message;
+		return cmd.execute();
 	}
 }

@@ -1,6 +1,10 @@
 package uChat.Command;
 
 import java.util.Date;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import uChat.CommandCode;
 
 public class ServerAddUser implements ICommand {
@@ -10,16 +14,17 @@ public class ServerAddUser implements ICommand {
 	private int server_id;
 	private Date timestamp;
 	
-	public int getServerID() {
-		return server_id;
+	public int getServerID() { return server_id; }
+	public Date getTimestamp() { return timestamp; }
+	
+	public void setServerID(int server_id) { this.server_id = server_id; }
+	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
+	
+	public static ServerAddUser initialize(JsonElement data) {
+		return new Gson().fromJson(data, ServerAddUser.class);
 	}
-	public void setServerID(int server_id) {
-		this.server_id = server_id;
-	}
-	public Date getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	
+	public String execute() {
+		return null;
 	}
 }
