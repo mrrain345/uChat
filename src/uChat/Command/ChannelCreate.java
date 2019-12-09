@@ -1,9 +1,12 @@
 package uChat.Command;
 
+import java.util.UUID;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
+import uChat.User;
 import uChat.Json.Role;
 
 public class ChannelCreate implements ICommand {
@@ -26,7 +29,7 @@ public class ChannelCreate implements ICommand {
 		return new Gson().fromJson(data, ChannelCreate.class);
 	}
 	
-	public String execute() {
+	public String execute(User user, UUID session) {
 		return null;
 	}
 }

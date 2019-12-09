@@ -1,5 +1,7 @@
 package uChat;
 
+import java.util.UUID;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -33,8 +35,11 @@ public class WebSocketServlet {
 		
 		Gson gson = new Gson();
 		CommandJson cmd = gson.fromJson(message, CommandJson.class);
-		System.out.printf("[%s] session: %s\n  %s\n", cmd.getCode(), cmd.getSessionID(), cmd.getData());
+		UUID session = cmd.getSessionID();
+		User user = Users.findUser(session);
 		
-		return cmd.execute();
+		System.out.printf("[%s] username: \"%s\", session: \"%s\"\n  %s\n", cmd.getCode(), user.getUsername(), cmd.getSessionID(), cmd.getData());
+		
+		return cmd.execute(user, session);
 	}
 }

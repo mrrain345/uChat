@@ -1,8 +1,11 @@
 package uChat.Command;
 
+import java.util.UUID;
+
 import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
+import uChat.User;
 
 public class FriendList implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -12,7 +15,7 @@ public class FriendList implements ICommand {
 		return new FriendList();
 	}
 	
-	public String execute() {
+	public String execute(User user, UUID session) {
 		return null;
 	}
 }

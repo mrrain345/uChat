@@ -1,9 +1,21 @@
 package uChat.Command;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.UUID;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
+import uChat.User;
+import uChat.Command.ACK.ServerCreateACK;
 
 public class ServerCreate implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -19,7 +31,49 @@ public class ServerCreate implements ICommand {
 		return new Gson().fromJson(data, ServerCreate.class);
 	}
 	
-	public String execute() {
+	public String execute(User user, UUID session) {
+		if (getServerName().length() < 3 || getServerName().length() > 80) {
+			return String.format(
+				"{ \"code\": %d, \"status\": 1, \"error:\" \"%s\" }",
+				CommandCode.SERVER_CREATE_ACK.getValue(),
+				"Incorrect server name (min: 3, max: 80 characters)"
+			);
+		}
+		
+		try {
+			Context context = new InitialContext();
+			DataSource ds = (DataSource) context.lookup("java:/comp/env/jdbc/database");
+			
+			Class.forName("org.mariadb.jdbc.Driver");
+			Connection connection = ds.getConnection();
+			
+			// DB: create server
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO Servers (name, owner_id) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			statement.setString(1, getServerName());
+			statement.setInt(2, user.getID());
+			statement.execute();
+			
+			ResultSet res = statement.getGeneratedKeys();
+			res.next();
+			int serverID = res.getInt(1);
+			res.close();
+			statement.close();
+			
+			statement = connection.prepareStatement("INSERT INTO Server_Members (server_id, user_id) VALUES (?, ?)");
+			statement.setInt(1, serverID);
+			statement.setInt(2, user.getID());
+			statement.close();
+			
+			statement = connection.prepareStatement("INSERT INTO Channels (server_id, name) VALUES (?, \"general\")");
+			statement.setInt(1, serverID);
+			statement.close();
+			connection.close();
+			
+			return new ServerCreateACK(serverID, getServerName()).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 }

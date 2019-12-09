@@ -1,9 +1,12 @@
 package uChat.Command;
 
+import java.util.UUID;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
+import uChat.User;
 
 public class ServerLeave implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -19,7 +22,7 @@ public class ServerLeave implements ICommand {
 		return new Gson().fromJson(data, ServerLeave.class);
 	}
 	
-	public String execute() {
+	public String execute(User user, UUID session) {
 		return null;
 	}
 }
