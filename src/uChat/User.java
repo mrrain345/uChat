@@ -15,7 +15,6 @@ public class User implements Serializable {
 	
 	private int id;
 	private String username;
-	private boolean isBot;
 	private List<UUID> sessions;
 	
 	public User() {
@@ -24,11 +23,9 @@ public class User implements Serializable {
 	
 	public int getID() { return id; }
 	public String getUsername() { return username; }
-	public boolean isBot() { return isBot; }
 	
 	public void setID(int id) { this.id = id; }
 	public void setUsername(String username) { this.username = username; }
-	public void setBot(boolean isBot) { this.isBot = isBot; }
 	
 	public List<UUID> getSessions() { return sessions; }
 	public void setSessions(List<UUID> sessions) { this.sessions = sessions; }
@@ -38,6 +35,8 @@ public class User implements Serializable {
 	public boolean removeSession(UUID session) { return this.sessions.remove(session); }
 	public boolean hasSession(UUID session) { return this.sessions.contains(session); }
 	
+	public boolean isOnline() { return sessions.size() != 0; }
+	
 	public void logout(UUID session) {
 		try {
 			Context context = new InitialContext();
@@ -46,6 +45,7 @@ public class User implements Serializable {
 			Class.forName("org.mariadb.jdbc.Driver");
 			Connection connection = ds.getConnection();
 			
+			// DB: delete session
 			PreparedStatement statement = connection.prepareStatement("DELETE FROM Sessions WHERE sess_id=? LIMIT 1");
 			statement.setString(1, session.toString());
 			statement.execute();
@@ -56,7 +56,7 @@ public class User implements Serializable {
 		}
 		
 		removeSession(session);
-		if (getSessions().size() == 0) Users.removeUser(this);
+		//if (getSessions().size() == 0) Users.removeUser(this);
 	}
 	
 	@Override

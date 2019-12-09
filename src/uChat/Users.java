@@ -28,6 +28,13 @@ public class Users {
 		return null;
 	}
 	
+	public static User findUser(int id) {
+		for (User user : users) {
+			if (user.getID() == id) return user;
+		}
+		return null;
+	}
+	
 	static {
 		if (users == null) users = new ArrayList<User>();
 	}
@@ -43,7 +50,8 @@ public class Users {
 		Class.forName("org.mariadb.jdbc.Driver");
 		Connection connection = ds.getConnection();
 		
-		PreparedStatement statement = connection.prepareStatement("SELECT id, username, is_bot FROM Users WHERE username=? AND password=? LIMIT 1");
+		// DB: get user
+		PreparedStatement statement = connection.prepareStatement("SELECT id, username FROM Users WHERE username=? AND password=? LIMIT 1");
 		statement.setString(1, username);
 		statement.setString(2, password);
 		ResultSet res = statement.executeQuery();
@@ -58,12 +66,13 @@ public class Users {
 		User user = new User();
 		user.setID(res.getInt("id"));
 		user.setUsername(res.getString("username"));
-		user.setBot(res.getBoolean("is_bot"));
 		res.close();
 		statement.close();
 		
 		UUID sessionID = UUID.randomUUID();
 		user.addSession(sessionID);
+		
+		// DB: create session
 		PreparedStatement statement2 = connection.prepareStatement("INSERT INTO Sessions (sess_id, user_id) VALUES (?, ?)");
 		statement2.setString(1, sessionID.toString());
 		statement2.setInt(2, user.getID());
@@ -85,6 +94,7 @@ public class Users {
 		Class.forName("org.mariadb.jdbc.Driver");
 		Connection connection = ds.getConnection();
 		
+		// DB: get user
 		PreparedStatement statement = connection.prepareStatement("SELECT id, username, is_bot FROM Sessions JOIN Users ON user_id=id WHERE sess_id=? LIMIT 1");
 		statement.setString(1, sessionID.toString());
 		ResultSet res = statement.executeQuery();
@@ -93,8 +103,11 @@ public class Users {
 		User user = new User();
 		user.setID(res.getInt("id"));
 		user.setUsername(res.getString("username"));
-		user.setBot(res.getBoolean("is_bot"));
 		user.addSession(sessionID);
+		
+		res.close();
+		statement.close();
+		connection.close();
 		
 		addUser(user);
 		return user;
