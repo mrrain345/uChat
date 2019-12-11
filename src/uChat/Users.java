@@ -105,7 +105,12 @@ public class Users {
 		statement.setString(1, sessionID.toString());
 		ResultSet res = statement.executeQuery();
 		
-		if (!res.next()) return null;
+		if (!res.next()) {
+			res.close();
+			statement.close();
+			connection.close();
+			return null;
+		}
 		User user = new User();
 		user.setID(res.getInt("id"));
 		user.setUsername(res.getString("username"));

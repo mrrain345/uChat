@@ -55,60 +55,6 @@ function getCodeID(command) {
 	}
 }
 
-function codeToString(code) {
-	switch(code) {
-		case  0: return 'UNKNOW';
-		case  1: return 'SERVER_SYNC';
-		case  2: return 'SERVER_SYNC_ACK';
-		case  3: return 'SERVER_GET_ROLES';
-		case  4: return 'SERVER_GET_ROLES_ACK';
-		case  5: return 'SERVER_GET_USERS';
-		case  6: return 'SERVER_GET_USERS_ACK';
-		case  7: return 'SERVER_ADD_USER';
-		case  8: return 'SERVER_ADD_USER_ACK';
-		case  9: return 'ROLE_GET_PERMISSIONS';
-		case 10: return 'ROLE_GET_PERMISSIONS_ACK';
-		case 11: return 'ROLE_SET_PERMISSIONS';
-		case 12: return 'ROLE_SET_PERMISSIONS_ACK';
-		case 13: return 'USER_GET_ROLES';
-		case 14: return 'USER_GET_ROLES_ACK';
-		case 15: return 'USER_SET_ROLES';
-		case 16: return 'USER_SET_ROLES_ACK';
-		case 17: return 'SERVER_DESTROY';
-		case 18: return 'SERVER_DESTROY_ACK';
-		case 19: return 'SERVER_REMOVE_ROLE';
-		case 20: return 'SERVER_REMOVE_ROLE_ACK';
-		case 21: return 'SERVER_LEAVE';
-		case 22: return 'SERVER_LEAVE_ACK';
-		case 23: return 'CHANNEL_CREATE';
-		case 24: return 'CHANNEL_CREATE_ACK';
-		case 25: return 'CHANNEL_LIST';
-		case 26: return 'CHANNEL_LIST_ACK';
-		case 27: return 'CHANNEL_MESSAGE';
-		case 28: return 'CHANNEL_MESSAGE_ACK';
-		case 29: return 'CHANNEL_RECEIVE';
-		case 30: return 'CHANNEL_RECEIVE_ACK';
-		case 31: return 'CHANNEL_DESTROY';
-		case 32: return 'CHANNEL_DESTROY_ACK';
-		case 33: return 'SERVER_CREATE';
-		case 34: return 'SERVER_CREATE_ACK';
-		case 35: return 'SERVER_LIST';
-		case 36: return 'SERVER_LIST_ACK';
-		case 37: return 'FRIEND_MESSAGE';
-		case 38: return 'FRIEND_MESSAGE_ACK';
-		case 39: return 'FRIEND_RECEIVE';
-		case 40: return 'FRIEND_RECEIVE_ACK';
-		case 41: return 'FRIEND_LIST';
-		case 42: return 'FRIEND_LIST_ACK';
-		case 43: return 'FRIEND_ADD';
-		case 44: return 'FRIEND_ADD_ACK';
-		case 45: return 'FRIEND_REMOVE';
-		case 46: return 'FRIEND_REMOVE_ACK';
-		case 47: return 'HEARTBEAT';
-		case 48: return 'HEARTBEAT_ACK';
-	}
-}
-
 function wsSendMessage(command, session, message) {
 	console.log(session);
 	

@@ -35,7 +35,7 @@ public class ServerCreate implements ICommand {
 	
 	public String execute(User user, UUID session) {
 		if (getServerName().length() < 3 || getServerName().length() > 80) {
-			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 1, "Incorrect server name (min: 3, max: 80 characters)");
+			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 2, "Incorrect server name (min: 3, max: 80 characters)");
 		}
 		
 		Connection connection = null;
@@ -87,7 +87,7 @@ public class ServerCreate implements ICommand {
 				catch (SQLException e1) { e1.printStackTrace(); }
 			}
 			e.printStackTrace();
-			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 2, "Internal server error");
+			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 1, "Internal server error");
 		}
 	}
 }

@@ -1,13 +1,4 @@
-let wsPort = null;
 let sessionID = null;
-
-function wsCommand(command, data) {
-	wsPort.postMessage({
-		command: command,
-		session: sessionID,
-		data: data
-	});
-}
 
 chrome.storage.local.get("sessionID", function(result) {
     if (result.sessionID === undefined) window.location = '/login.html';
@@ -15,11 +6,6 @@ chrome.storage.local.get("sessionID", function(result) {
 });
 
 $(document).ready(function() {
-	wsPort = chrome.runtime.connect({name: "WebSocket"});
-	wsPort.onMessage.addListener(function(message) {
-		console.log(message);
-	});
-	
 	$('#logout-btn').click(function() {
 		chrome.storage.local.get("sessionID", function(result) {
 		    let session = result.sessionID;
@@ -40,6 +26,8 @@ $(document).ready(function() {
 	
 	$('#server-create-btn').click(function() {
 		let name = window.prompt("Server name:");
-		wsCommand('SERVER_CREATE', { server_name: name });
+		if (name !== '') wsCommand('SERVER_CREATE', { server_name: name });
 	});
+	
+	wsCommand('SERVER_LIST', {});
 });

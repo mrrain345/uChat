@@ -39,7 +39,7 @@ public class WebSocketServlet {
 		User user = Users.findUser(session);
 		
 		if (user == null) {
-			System.err.printf("BAD SESSION: \"%s\"", cmd.getSessionID());
+			System.err.printf("[BAD SESSION] \"%s\"\n", cmd.getSessionID());
 			return "{ \"error\":\"Bad session\"}";
 		}
 		

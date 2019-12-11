@@ -16,19 +16,8 @@ public class ServerCreateACK implements ICommandACK {
 	public void setServerName(String server_name) { this.server_name = server_name; }
 	
 	public ServerCreateACK() {}
-	
 	public ServerCreateACK(int id, String name) {
 		this.server_id = id;
 		this.server_name = name;
-	}
-	
-	@Override
-	public String toString() {
-		return String.format(
-			"{\"code\":%d,\"status\":0,\"data\":{\"server_id\":%d,\"server_name\":\"%s\"}}",
-			CommandCode.SERVER_CREATE_ACK.getValue(),
-			server_id,
-			server_name
-		);
 	}
 }
