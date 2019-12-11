@@ -121,7 +121,7 @@ function wsCommand(command, data) {
 $(document).ready(function() {
 	wsPort = chrome.runtime.connect({name: "WebSocket"});
 	wsPort.onMessage.addListener(function(command) {
-		console.log('['+codeToString(command.code)+']', command.data);
-		command_callback(command.code, command.data);
+		if (command.status === 0) command_callback(command.code, command.data);
+		else console.error(command);
 	});
 });

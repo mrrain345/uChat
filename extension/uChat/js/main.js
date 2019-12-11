@@ -26,7 +26,7 @@ $(document).ready(function() {
 	
 	$('#server-create-btn').click(function() {
 		let name = window.prompt("Server name:");
-		if (name !== '') wsCommand('SERVER_CREATE', { server_name: name });
+		if (name !== null && name !== '') wsCommand('SERVER_CREATE', { server_name: name });
 	});
 	
 	wsCommand('SERVER_LIST', {});

@@ -55,11 +55,64 @@ function getCodeID(command) {
 	}
 }
 
+function codeToString(code) {
+	switch(code) {
+		case  0: return 'UNKNOW';
+		case  1: return 'SERVER_SYNC';
+		case  2: return 'SERVER_SYNC_ACK';
+		case  3: return 'SERVER_GET_ROLES';
+		case  4: return 'SERVER_GET_ROLES_ACK';
+		case  5: return 'SERVER_GET_USERS';
+		case  6: return 'SERVER_GET_USERS_ACK';
+		case  7: return 'SERVER_ADD_USER';
+		case  8: return 'SERVER_ADD_USER_ACK';
+		case  9: return 'ROLE_GET_PERMISSIONS';
+		case 10: return 'ROLE_GET_PERMISSIONS_ACK';
+		case 11: return 'ROLE_SET_PERMISSIONS';
+		case 12: return 'ROLE_SET_PERMISSIONS_ACK';
+		case 13: return 'USER_GET_ROLES';
+		case 14: return 'USER_GET_ROLES_ACK';
+		case 15: return 'USER_SET_ROLES';
+		case 16: return 'USER_SET_ROLES_ACK';
+		case 17: return 'SERVER_DESTROY';
+		case 18: return 'SERVER_DESTROY_ACK';
+		case 19: return 'SERVER_REMOVE_ROLE';
+		case 20: return 'SERVER_REMOVE_ROLE_ACK';
+		case 21: return 'SERVER_LEAVE';
+		case 22: return 'SERVER_LEAVE_ACK';
+		case 23: return 'CHANNEL_CREATE';
+		case 24: return 'CHANNEL_CREATE_ACK';
+		case 25: return 'CHANNEL_LIST';
+		case 26: return 'CHANNEL_LIST_ACK';
+		case 27: return 'CHANNEL_MESSAGE';
+		case 28: return 'CHANNEL_MESSAGE_ACK';
+		case 29: return 'CHANNEL_RECEIVE';
+		case 30: return 'CHANNEL_RECEIVE_ACK';
+		case 31: return 'CHANNEL_DESTROY';
+		case 32: return 'CHANNEL_DESTROY_ACK';
+		case 33: return 'SERVER_CREATE';
+		case 34: return 'SERVER_CREATE_ACK';
+		case 35: return 'SERVER_LIST';
+		case 36: return 'SERVER_LIST_ACK';
+		case 37: return 'FRIEND_MESSAGE';
+		case 38: return 'FRIEND_MESSAGE_ACK';
+		case 39: return 'FRIEND_RECEIVE';
+		case 40: return 'FRIEND_RECEIVE_ACK';
+		case 41: return 'FRIEND_LIST';
+		case 42: return 'FRIEND_LIST_ACK';
+		case 43: return 'FRIEND_ADD';
+		case 44: return 'FRIEND_ADD_ACK';
+		case 45: return 'FRIEND_REMOVE';
+		case 46: return 'FRIEND_REMOVE_ACK';
+		case 47: return 'HEARTBEAT';
+		case 48: return 'HEARTBEAT_ACK';
+		default: return 'UNKNOW';
+	}
+}
+
 function wsSendMessage(command, session, message) {
-	console.log(session);
-	
 	if (!session) {
-		console.error("[WebSocket "+command+"] You are not logged in. Failed to send:", message);
+		console.error("["+command+"] You are not logged in. Failed to send:", message);
 		return;
 	}
 	
@@ -70,7 +123,7 @@ function wsSendMessage(command, session, message) {
 	};
 	
     webSocket.send(JSON.stringify(data));
-    console.log("[WebSocket "+command+"] Send:", message);
+    console.log("> ["+command+"]", message);
 }
 
 function wsClose() {
@@ -83,8 +136,11 @@ function wsOnOpen(message) {
 }
 
 function wsOnMessage(message) {
-    console.log("[WebSocket] Recieved:", message.data);
-    if (wsPort) wsPort.postMessage(JSON.parse(message.data));
+	const data = JSON.parse(message.data);
+    if (data.status === 0) console.log("< ["+codeToString(data.code)+"]", data.data);
+    else console.error("["+codeToString(data.code)+"] ("+data.status+")", data.error);
+    
+    if (wsPort) wsPort.postMessage(data);
     else console.error("wsPort is closed");
 }
 
@@ -94,8 +150,7 @@ function wsOnClose(message) {
 }
 
 function wsOnError(message) {
-    console.log("[WebSocket] Error");
-    console.log(message);
+    console.error("[WebSocket Error]", message);
 }
 
 function wsConnect() {
@@ -117,7 +172,6 @@ chrome.runtime.onConnect.addListener(function(port) {
 	if (port.name === 'WebSocket') {
 		wsPort = port;
 		wsPort.onMessage.addListener(function(msg) {
-			console.log(msg);
 			wsSendMessage(msg.command, msg.session, msg.data);
 		});
 	}
