@@ -3,6 +3,7 @@ package uChat.Command;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
 import uChat.User;
+import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ServerCreateACK;
 
 public class ServerCreate implements ICommand {
@@ -33,19 +35,18 @@ public class ServerCreate implements ICommand {
 	
 	public String execute(User user, UUID session) {
 		if (getServerName().length() < 3 || getServerName().length() > 80) {
-			return String.format(
-				"{ \"code\": %d, \"status\": 1, \"error:\" \"%s\" }",
-				CommandCode.SERVER_CREATE_ACK.getValue(),
-				"Incorrect server name (min: 3, max: 80 characters)"
-			);
+			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 1, "Incorrect server name (min: 3, max: 80 characters)");
 		}
 		
+		Connection connection = null;
+		
 		try {
+			// Create DB connection
 			Context context = new InitialContext();
 			DataSource ds = (DataSource) context.lookup("java:/comp/env/jdbc/database");
-			
 			Class.forName("org.mariadb.jdbc.Driver");
-			Connection connection = ds.getConnection();
+			connection = ds.getConnection();
+			connection.setAutoCommit(false);
 			
 			// DB: create server
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO Servers (name, owner_id) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -59,21 +60,34 @@ public class ServerCreate implements ICommand {
 			res.close();
 			statement.close();
 			
+			// DB: add user to new server
 			statement = connection.prepareStatement("INSERT INTO Server_Members (server_id, user_id) VALUES (?, ?)");
 			statement.setInt(1, serverID);
 			statement.setInt(2, user.getID());
+			statement.execute();
 			statement.close();
 			
+			// DB: create 'general' channel
 			statement = connection.prepareStatement("INSERT INTO Channels (server_id, name) VALUES (?, \"general\")");
 			statement.setInt(1, serverID);
+			statement.execute();
 			statement.close();
-			connection.close();
 			
-			return new ServerCreateACK(serverID, getServerName()).toString();
+			// Commit DB connection
+			connection.commit();
+			connection.close();
+			return new ServerCreateACK(serverID, getServerName()).toJSON();
+				
 		} catch (Exception e) {
+			if (connection != null) {
+				try {
+					connection.rollback();
+					connection.close();
+				}
+				catch (SQLException e1) { e1.printStackTrace(); }
+			}
 			e.printStackTrace();
+			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 2, "Internal server error");
 		}
-		
-		return null;
 	}
 }

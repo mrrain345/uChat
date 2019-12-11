@@ -1,11 +1,10 @@
 package uChat.Command.ACK;
 
-import java.io.Serializable;
-
 import uChat.CommandCode;
 
-public class ServerCreateACK implements Serializable {
+public class ServerCreateACK implements ICommandACK {
 	private static final long serialVersionUID = 1L;
+	public CommandCode getCode() { return CommandCode.SERVER_CREATE_ACK; }
 	
 	private int server_id;
 	private String server_name;
@@ -26,7 +25,7 @@ public class ServerCreateACK implements Serializable {
 	@Override
 	public String toString() {
 		return String.format(
-			"{ \"code\": %d, \"status\": 0, \"server_id\": %d, \"server_name\": \"%s\" }",
+			"{\"code\":%d,\"status\":0,\"data\":{\"server_id\":%d,\"server_name\":\"%s\"}}",
 			CommandCode.SERVER_CREATE_ACK.getValue(),
 			server_id,
 			server_name

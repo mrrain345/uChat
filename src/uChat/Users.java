@@ -25,7 +25,13 @@ public class Users {
 				if (sess.equals(session)) return user;
 			}
 		}
-		return null;
+		
+		try {
+			return authenticate(session);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public static User findUser(int id) {
@@ -85,8 +91,8 @@ public class Users {
 	}
 	
 	public static User authenticate(UUID sessionID) throws Exception {
-		User usr = findUser(sessionID);
-		if (usr != null) return usr;
+		//User usr = findUser(sessionID);
+		//if (usr != null) return usr;
 		
 		Context context = new InitialContext();
 		DataSource ds = (DataSource) context.lookup("java:/comp/env/jdbc/database");

@@ -31,15 +31,21 @@ public class WebSocketServlet {
 	
 	@OnMessage
 	public String handleMessage(String message) {
-		System.out.println("[WebSocket] Message: " + message);
+		//System.out.println("[WebSocket] Message: " + message);
 		
 		Gson gson = new Gson();
 		CommandJson cmd = gson.fromJson(message, CommandJson.class);
 		UUID session = cmd.getSessionID();
 		User user = Users.findUser(session);
 		
-		System.out.printf("[%s] username: \"%s\", session: \"%s\"\n  %s\n", cmd.getCode(), user.getUsername(), cmd.getSessionID(), cmd.getData());
+		if (user == null) {
+			System.err.printf("BAD SESSION: \"%s\"", cmd.getSessionID());
+			return "{ \"error\":\"Bad session\"}";
+		}
 		
-		return cmd.execute(user, session);
+		String response = cmd.execute(user, session);
+		System.out.printf("[%s] username: \"%s\", session: \"%s\"\n>  %s\n<  %s\n\n", cmd.getCode(), user.getUsername(), cmd.getSessionID(), cmd.getData(), response);
+		
+		return response;
 	}
 }
