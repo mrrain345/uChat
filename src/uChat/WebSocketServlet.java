@@ -8,6 +8,8 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.server.ServerEndpoint;
 import com.google.gson.Gson;
+
+import uChat.Command.ACK.ICommandACK;
 import uChat.Json.CommandJson;
 
 @ServerEndpoint("/api")
@@ -31,8 +33,6 @@ public class WebSocketServlet {
 	
 	@OnMessage
 	public String handleMessage(String message) {
-		//System.out.println("[WebSocket] Message: " + message);
-		
 		Gson gson = new Gson();
 		CommandJson cmd = gson.fromJson(message, CommandJson.class);
 		UUID session = cmd.getSessionID();
@@ -43,9 +43,8 @@ public class WebSocketServlet {
 			return "{ \"error\":\"Bad session\"}";
 		}
 		
-		String response = cmd.execute(user, session);
-		System.out.printf("[%s] username: \"%s\", session: \"%s\"\n>  %s\n<  %s\n\n", cmd.getCode(), user.getUsername(), cmd.getSessionID(), cmd.getData(), response);
-		
-		return response;
+		ICommandACK response = cmd.execute(user, session);
+		System.out.printf("[%s] username: \"%s\", session: \"%s\"\n>  %s\n<  %s\n\n", cmd.getCode(), user.getUsername(), cmd.getSessionID(), cmd.getData(), response.getDataJSON());
+		return response.toJSON();
 	}
 }

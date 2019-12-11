@@ -5,8 +5,9 @@ import java.util.UUID;
 
 import uChat.CommandCode;
 import uChat.User;
+import uChat.Command.ACK.ICommandACK;
 
 public interface ICommand extends Serializable {
 	public CommandCode getCode();
-	public String execute(User user, UUID session);
+	public ICommandACK execute(User user, UUID session);
 }

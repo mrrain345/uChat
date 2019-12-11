@@ -7,6 +7,8 @@ import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
 import uChat.User;
+import uChat.Command.ACK.ICommandACK;
+import uChat.Command.ACK.Error.UnimplementedErrorACK;
 
 public class ChannelReceive implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -31,7 +33,7 @@ public class ChannelReceive implements ICommand {
 		return new Gson().fromJson(data, ChannelReceive.class);
 	}
 	
-	public String execute(User user, UUID session) {
-		return null;
+	public ICommandACK execute(User user, UUID session) {
+		return new UnimplementedErrorACK(this);
 	}
 }

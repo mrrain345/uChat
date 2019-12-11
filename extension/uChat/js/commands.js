@@ -28,7 +28,7 @@ function CMD_CHANNEL_DESTROY_ACK(data) {}
 function CMD_SERVER_CREATE_ACK(data) {
 	let item = `
 <li>
-	<span id="server-list-${data.server_id}">${data.server_name}</button>
+	<button id="server-list-${data.server_id}">${data.server_name}</button>
 	<ol id="channels-list-${data.server_id}"></ol>
 </li>`;
 	$('#servers-list').append(item);

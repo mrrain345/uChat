@@ -18,6 +18,8 @@ import uChat.CommandCode;
 import uChat.User;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ServerCreateACK;
+import uChat.Command.ACK.Error.InternalServerErrorACK;
+import uChat.Command.ACK.Error.UnimplementedErrorACK;
 
 public class ServerCreate implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -33,7 +35,7 @@ public class ServerCreate implements ICommand {
 		return new Gson().fromJson(data, ServerCreate.class);
 	}
 	
-	public String execute(User user, UUID session) {
+	public ICommandACK execute(User user, UUID session) {
 		if (getServerName().length() < 3 || getServerName().length() > 80) {
 			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 2, "Incorrect server name (min: 3, max: 80 characters)");
 		}
@@ -76,7 +78,7 @@ public class ServerCreate implements ICommand {
 			// Commit DB connection
 			connection.commit();
 			connection.close();
-			return new ServerCreateACK(serverID, getServerName()).toJSON();
+			return new ServerCreateACK(serverID, getServerName());
 				
 		} catch (Exception e) {
 			if (connection != null) {
@@ -87,7 +89,7 @@ public class ServerCreate implements ICommand {
 				catch (SQLException e1) { e1.printStackTrace(); }
 			}
 			e.printStackTrace();
-			return ICommandACK.error(CommandCode.SERVER_CREATE_ACK, 1, "Internal server error");
+			return new InternalServerErrorACK(this);
 		}
 	}
 }

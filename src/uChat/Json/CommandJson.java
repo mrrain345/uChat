@@ -2,12 +2,11 @@ package uChat.Json;
 
 import java.io.Serializable;
 import java.util.UUID;
-
 import com.google.gson.JsonElement;
-
 import uChat.CommandCode;
 import uChat.User;
 import uChat.Command.*;
+import uChat.Command.ACK.ICommandACK;
 
 public class CommandJson implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -25,7 +24,7 @@ public class CommandJson implements Serializable {
 	public CommandCode getCode() { return CommandCode.fromValue(code); }
 	public JsonElement getData() { return data; }
 	
-	public String execute(User user, UUID session) {
+	public ICommandACK execute(User user, UUID session) {
 		switch(getCode()) {
 		case CHANNEL_CREATE: 		return ChannelCreate.initialize(data).execute(user, session);
 		case CHANNEL_DESTROY:		return ChannelDestroy.initialize(data).execute(user, session);
@@ -54,7 +53,7 @@ public class CommandJson implements Serializable {
 		
 		default:
 			System.err.println("Incorrect command code: " + code);
-			return "";
+			return ICommandACK.error(CommandCode.UNKNOW, 254, "Incorrect command code: " + code);
 		}
 	}
 }

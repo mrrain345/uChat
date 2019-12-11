@@ -17,6 +17,7 @@ import uChat.CommandCode;
 import uChat.User;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ServerListACK;
+import uChat.Command.ACK.Error.InternalServerErrorACK;
 import uChat.Json.ServerJson;
 
 public class ServerList implements ICommand {
@@ -27,7 +28,7 @@ public class ServerList implements ICommand {
 		return new ServerList();
 	}
 	
-	public String execute(User user, UUID session) {
+	public ICommandACK execute(User user, UUID session) {
 		Connection connection = null;
 		
 		try {
@@ -54,7 +55,7 @@ public class ServerList implements ICommand {
 			res.close();
 			statement.close();
 			connection.close();
-			return new ServerListACK(servers).toJSON();
+			return new ServerListACK(servers);
 				
 		} catch (Exception e) {
 			if (connection != null) {
@@ -64,7 +65,7 @@ public class ServerList implements ICommand {
 				catch (SQLException e1) { e1.printStackTrace(); }
 			}
 			e.printStackTrace();
-			return ICommandACK.error(CommandCode.SERVER_LIST_ACK, 1, "Internal server error");
+			return new InternalServerErrorACK(this);
 		}
 	}
 }
