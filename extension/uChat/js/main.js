@@ -1,9 +1,26 @@
 let sessionID = null;
+let wsPort = null;
 
 chrome.storage.local.get("sessionID", function(result) {
     if (result.sessionID === undefined) window.location = '/login.html';
     else sessionID = result.sessionID;
 });
+
+function wsCommand(command, data) {
+	if (wsPort === null) {
+		wsPort = chrome.runtime.connect({name: "WebSocket"});
+		wsPort.onMessage.addListener(function(command) {
+			if (command.status === 0) command_callback(command.code, command.data);
+			else console.error(command);
+		});
+  	}
+  
+	wsPort.postMessage({
+		command: command,
+		session: sessionID,
+		data: data
+	});
+}
 
 $(document).ready(function() {
 	$('#logout-btn').click(function() {
@@ -23,11 +40,4 @@ $(document).ready(function() {
 			});
 		});
 	});
-	
-	$('#server-create-btn').click(function() {
-		let name = window.prompt("Server name:");
-		if (name !== null && name !== '') wsCommand('SERVER_CREATE', { server_name: name });
-	});
-	
-	wsCommand('SERVER_LIST', {});
 });

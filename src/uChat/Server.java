@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.naming.Context;
@@ -23,24 +24,30 @@ public class Server implements Serializable {
 	private String name;
 	private int ownerID;
 	private Date createdAt;
-	private List<Channel> channels;
-	private List<UserData> users;
+	private Hashtable<Integer, Channel> channels;
+	private Hashtable<Integer, UserData> users;
 	
 	
 	public int getID() { return id; }
 	public String getName() { return name; }
 	public int getOwnerID() { return ownerID; }
 	public Date getCreatedAt() { return createdAt; }
-	public List<Channel> getChannels() { return channels; }
-	public List<UserData> getUsers() { return users; }
+	public Hashtable<Integer, Channel> getChannels() { return channels; }
+	public Hashtable<Integer, UserData> getUsers() { return users; }
 
+	public void addUser(UserData user) { users.put(user.getID(), user); }
+	public void addUser(User user) { users.put(user.getID(), new UserData(user)); }
+	
+	public UserData getUser(int id) { return users.get(id); }	
+	public Channel getChannel(int id) { return channels.get(id); }
+	
 	static {
 		servers = new ArrayList<Server>();
 	}
 
 	public Server() {
-		this.channels = new ArrayList<Channel>();
-		this.users = new ArrayList<UserData>();
+		this.channels = new Hashtable<Integer, Channel>();
+		this.users = new Hashtable<Integer, UserData>();
 	}
 	
 	public Server(int id) {
@@ -54,8 +61,8 @@ public class Server implements Serializable {
 	
 	public void initialize(int id) throws IllegalArgumentException {
 		this.id = id;
-		this.channels = new ArrayList<Channel>();
-		this.users = new ArrayList<UserData>();
+		this.channels = new Hashtable<Integer, Channel>();
+		this.users = new Hashtable<Integer, UserData>();
 		
 		try {
 			Context context = new InitialContext();
@@ -88,8 +95,8 @@ public class Server implements Serializable {
 			res = statement.executeQuery();
 			
 			while (res.next()) {
-				Channel channel = new Channel(id, res.getInt("id"), res.getString("name"));
-				channels.add(channel);
+				Channel channel = new Channel(this, res.getInt("id"), res.getString("name"));
+				channels.put(channel.getChannelID(), channel);
 			}
 			
 			res.close();
@@ -102,7 +109,7 @@ public class Server implements Serializable {
 			
 			while (res.next()) {
 				UserData user = new UserData(res.getInt("user_id"), res.getString("server_id"));
-				users.add(user);
+				users.put(user.getID(), user);
 			}
 			
 			res.close();

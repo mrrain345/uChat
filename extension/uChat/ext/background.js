@@ -1,5 +1,6 @@
 let webSocket = null;
 let wsPort = null;
+let sessionID = null;
 
 function getCodeID(command) {
 	switch(command) {
@@ -126,13 +127,19 @@ function wsSendMessage(command, session, message) {
     console.log("> ["+command+"]", message);
 }
 
+function wsCommand(command, data) {
+	console.log(command);
+	wsSendMessage(command, sessionID, data);
+}
+
 function wsClose() {
     webSocket.close();
     console.log("[WebSocket] Closed");
 }
 
 function wsOnOpen(message) {
-    console.log("[WebSocket] Connected");
+	console.log("[WebSocket] Connected");
+	wsCommand('SERVER_LIST', {});
 }
 
 function wsOnMessage(message) {
@@ -140,8 +147,7 @@ function wsOnMessage(message) {
     if (data.status === 0) console.log("< ["+codeToString(data.code)+"]", data.data);
     else console.error("["+codeToString(data.code)+"] ("+data.status+")", data.error);
     
-    if (wsPort) wsPort.postMessage(data);
-    else console.error("wsPort is closed");
+    command_callback(data.code, data.data);
 }
 
 function wsOnClose(message) {
@@ -164,6 +170,7 @@ function wsConnect() {
 
 chrome.storage.local.get("sessionID", function(result) {
     if (result.sessionID !== undefined) {
+		sessionID = result.sessionID;
     	wsConnect();
     }
 });
@@ -173,6 +180,11 @@ chrome.runtime.onConnect.addListener(function(port) {
 		wsPort = port;
 		wsPort.onMessage.addListener(function(msg) {
 			wsSendMessage(msg.command, msg.session, msg.data);
+		});
+	}
+	else if (port.name === 'Servers') {
+    	port.onMessage.addListener(function(msg) {
+			servers_send(port, msg);
 		});
 	}
 	else console.error('Incorrect port:', port.name);

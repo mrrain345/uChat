@@ -1,21 +1,26 @@
 package uChat;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class Channel implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private int serverID;
+	private Server server;
 	private int channelID;
 	private String name;
 	
-	public int getServerID() { return serverID; }
+	public Server getServer() { return server; }
 	public int getChannelID() { return channelID; }
 	public String getName() { return name; }
 	
+	public void sendMessage(User user, UUID session, String message) {
+		// TODO
+	}
+	
 	public Channel() {}
-	public Channel(int serverID, int channelID, String name) {
-		this.serverID = serverID;
+	public Channel(Server server, int channelID, String name) {
+		this.server = server;
 		this.channelID = channelID;
 		this.name = name;
 	}

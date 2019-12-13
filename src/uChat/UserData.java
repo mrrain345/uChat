@@ -21,6 +21,11 @@ public class UserData implements Serializable {
 		this.username = username;
 	}
 	
+	public UserData(User user) {
+		this.id = user.getID();
+		this.username = user.getUsername();
+	}
+	
 	public User getUser() {
 		return Users.findUser(id);
 	}

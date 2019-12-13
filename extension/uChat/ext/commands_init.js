@@ -1,5 +1,3 @@
-let wsPort = null;
-
 function codeToString(code) {
 	switch(code) {
 		case  0: return 'UNKNOW';
@@ -109,19 +107,3 @@ function command_callback(code, data) {
 		default: return CMD_UNKDOW(data);
 	}
 }
-
-function wsCommand(command, data) {
-	wsPort.postMessage({
-		command: command,
-		session: sessionID,
-		data: data
-	});
-}
-
-$(document).ready(function() {
-	wsPort = chrome.runtime.connect({name: "WebSocket"});
-	wsPort.onMessage.addListener(function(command) {
-		if (command.status === 0) command_callback(command.code, command.data);
-		else console.error(command);
-	});
-});

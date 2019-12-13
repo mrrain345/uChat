@@ -37,6 +37,10 @@ public class User implements Serializable {
 	
 	public boolean isOnline() { return sessions.size() != 0; }
 	
+	public void sendMessage(Server server, Channel channel, User outhor, String message) {
+		// TODO
+	}
+	
 	public void logout(UUID session) {
 		try {
 			Context context = new InitialContext();
