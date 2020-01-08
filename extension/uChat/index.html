@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="css/style.css"/>
 	<script src="lib/jquery.min.js"></script>
 	<script src="lib/bootstrap.min.js"></script>
+	<script src="js/messages.js"></script>
 	<script src="js/navbar.js"></script>
 	<script src="js/main.js"></script>
 </head>
@@ -18,12 +19,16 @@
 		</button>
 		<span class="navbar-brand">µChat</span>
 		<button id="logout-btn" class="btn btn-dark" title="Logout"><i class="material-icons">input</i></button>
-		<div class="collapse navbar-collapse" id="navbar-nav" style="max-height: 400px; overflow-y: auto;">
+		<div class="collapse navbar-collapse" id="navbar-nav" style="max-height: 444px; overflow-y: auto;">
 			<span id="server-list"></span>
 		</div>
 	</nav>
 
 	<div style="height: 56px;"></div>
-	Hello world!
+	<div id="channel-messages"></div>
+	<div id="message-box">
+		<textarea class="form-control" placeholder="Send message..."></textarea>
+		<i id="message-send" class="material-icons">send</i>
+	</div>
 </body>
 </html>

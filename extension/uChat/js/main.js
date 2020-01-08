@@ -39,4 +39,14 @@ $(document).ready(function() {
 			});
 		});
 	});
+	$('#message-box textarea').on('change keyup paste propertychange', function() {
+		this.style.height = '5px';
+		if (this.scrollHeight <= 200) {
+			this.style.height = (this.scrollHeight)+'px';
+			this.style['overflow-y'] = 'hidden';
+		} else {
+			this.style.height = '200px';
+			this.style['overflow-y'] = 'scroll';
+		}
+	});
 });

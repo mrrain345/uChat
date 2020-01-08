@@ -1,6 +1,7 @@
 body {
 	width: 350px;
 	height: 500px;
+	background-color: #49525A;
 }
 
 .alert:empty {
@@ -14,4 +15,60 @@ body {
 #logout-btn {
 	color: rgba(255,255,255,.5);
 	padding: 5px 5px 0px 5px;
+}
+
+#logout-btn:hover {
+	color: rgba(255,255,255,.8);
+}
+
+#channel-messages {
+	overflow-y: auto;
+	max-height: 400px;
+	color: #FFFFFF;
+}
+
+.channel-message {
+	padding: 2px 5px;
+}
+
+.message-username {
+	font-weight: bold;
+	letter-spacing: 0.5px;
+	display: block;
+}
+
+.message-content {
+	display: block;
+	padding: 0 5px;
+	white-space: pre-wrap;
+}
+
+#message-box {
+	background-color: var(--gray-dark);
+    position: absolute;
+    left: 0;
+	right: 0;
+	bottom: 0;
+	padding-top: 5px;
+}
+
+#message-box textarea {
+	background: transparent;
+	border: none;
+	color: #FFFFFF;
+	width: 310px;
+	height: 31px;
+	line-height: 1.2;
+	overflow: hidden;
+	resize: none;
+	display: inline-block;
+}
+
+#message-send {
+	color: rgba(255,255,255,.5);
+	padding-left: 2px;
+}
+
+#message-send:hover {
+	color: rgba(255,255,255,.8);
 }
