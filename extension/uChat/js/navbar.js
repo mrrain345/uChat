@@ -15,7 +15,7 @@ function nav_update_members() {
 	let html = '';
 	for (let i = 0; i < users.length; i++) {
 		const user = users[i];
-		html = `${html}<li>${user.username}</li>`
+		html = `${html}<li class="nav-link">${user.username}</li>`
 	}
 
 	$('#server-members-list').html(html);
@@ -35,7 +35,7 @@ function nav_select(server, channel) {
 	$(`#nav-server-${server}`).addClass('show');
 	nav_selected.server = server;
 	nav_selected.channel = channel;
-	nav_update_members()
+	nav_update_members();
 }
 
 function nav_render() {
@@ -54,9 +54,22 @@ function nav_render() {
 			<span class="nav-link dropdown-toggle">${server.name}</span>
 			<div class="dropdown-menu">${channels_html}</div>
 		</li>`;
-	}	
+	}
 	
-	const html = `<ul class="navbar-nav"><li class="nav-item active"><span class="nav-link">Servers:<button id="server-create-btn" class="btn btn-dark float-right">+</button></span></li>${servers_html}</ul>`;
+	const html = `
+<ul class="navbar-nav">
+	<li class="nav-item active">
+		<span class="nav-link">
+			Servers:<button id="server-create-btn" class="btn btn-dark float-right">+</button>
+		</span>
+	</li>
+	${servers_html}
+	<li class="nav-item active">
+		<span class="nav-link">Members:</span>
+	</li>
+	<ul id="server-members-list" class="navbar-nav"></ul>
+</ul>`;
+	
 	$('#server-list').html(html);
 
 	$('.nav-server').click(function(e) {

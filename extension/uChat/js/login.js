@@ -4,6 +4,7 @@ $(document).ready(function() {
 	});
 	
 	$('#login-form').submit(function(e) {
+    let loginPort = chrome.runtime.connect({name: "Login"});
 		let username = $('#username').val();
 		let password = $('#password').val();
 		
@@ -21,7 +22,8 @@ $(document).ready(function() {
 			success: function (res) {
 				if (res.login) {
 					chrome.storage.local.set({ "sessionID": res.session_id }, function(){
-						window.location = '/index.html';
+            loginPort.postMessage({ login: true, session: res.session_id });
+            window.location = '/index.html';
 					});
 				} else $('#login-alert').text('Bad login or password');
 			},

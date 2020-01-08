@@ -1,9 +1,8 @@
-let sessionID = null;
 let wsPort = null;
+let loginPort = chrome.runtime.connect({name: "Login"});
 
 chrome.storage.local.get("sessionID", function(result) {
     if (result.sessionID === undefined) window.location = '/login.html';
-    else sessionID = result.sessionID;
 });
 
 function wsCommand(command, data) {
@@ -17,7 +16,6 @@ function wsCommand(command, data) {
   
 	wsPort.postMessage({
 		command: command,
-		session: sessionID,
 		data: data
 	});
 }
@@ -37,6 +35,7 @@ $(document).ready(function() {
 		    
 		    chrome.storage.local.remove("sessionID", function() {
 				window.location = '/login.html';
+				loginPort.postMessage({ login: false });
 			});
 		});
 	});

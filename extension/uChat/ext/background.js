@@ -171,20 +171,31 @@ function wsConnect() {
 chrome.storage.local.get("sessionID", function(result) {
     if (result.sessionID !== undefined) {
 		sessionID = result.sessionID;
-    	wsConnect();
-    }
+		wsConnect();
+	}
 });
 
 chrome.runtime.onConnect.addListener(function(port) {
 	if (port.name === 'WebSocket') {
 		wsPort = port;
 		wsPort.onMessage.addListener(function(msg) {
-			wsSendMessage(msg.command, msg.session, msg.data);
+			wsSendMessage(msg.command, sessionID, msg.data);
 		});
 	}
 	else if (port.name === 'Servers') {
     	port.onMessage.addListener(function(msg) {
 			servers_send(port, msg);
+		});
+	}
+	else if (port.name === 'Login') {
+		port.onMessage.addListener(function(msg) {
+			if (msg.login) {
+				sessionID = msg.session;
+				wsConnect();
+			} else {
+				wsClose();
+				sessionID = null;
+			}
 		});
 	}
 	else console.error('Incorrect port:', port.name);
