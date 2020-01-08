@@ -1,14 +1,21 @@
 package uChat;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import javax.websocket.Session;
+
+import com.google.gson.Gson;
+
+import uChat.Json.MessageJson;
 
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -16,9 +23,11 @@ public class User implements Serializable {
 	private int id;
 	private String username;
 	private List<UUID> sessions;
+	private HashMap<UUID, Session> wsSessions;
 	
 	public User() {
 		sessions = new ArrayList<UUID>();
+		wsSessions = new HashMap<UUID, Session>();
 	}
 	
 	public int getID() { return id; }
@@ -30,15 +39,36 @@ public class User implements Serializable {
 	public List<UUID> getSessions() { return sessions; }
 	public void setSessions(List<UUID> sessions) { this.sessions = sessions; }
 	public UUID getSession(int index) { return sessions.get(index); }
-	public void setSession(int index, UUID session) { this.sessions.set(index, session); }
+	public void setSession(int index, UUID session, Session wsSession) { this.sessions.set(index, session); this.wsSessions.replace(session, wsSession); }
+	public void setWsSession(UUID session, Session wsSession) { this.wsSessions.put(session, wsSession); }
+	public void addSession(UUID session, Session wsSession) { this.sessions.add(session); this.wsSessions.put(session, wsSession); }
 	public void addSession(UUID session) { this.sessions.add(session); }
-	public boolean removeSession(UUID session) { return this.sessions.remove(session); }
+	public boolean removeSession(UUID session) { this.wsSessions.remove(session); return this.sessions.remove(session); }
 	public boolean hasSession(UUID session) { return this.sessions.contains(session); }
 	
 	public boolean isOnline() { return sessions.size() != 0; }
 	
-	public void sendMessage(Server server, Channel channel, User outhor, String message) {
-		// TODO
+	public void sendMessage(MessageJson message) {
+		sendWsMessage(new Gson().toJson(MessageJson.class));
+	}
+	
+	public void sendWsMessage(UUID session, String message) {
+		Session wsSession = wsSessions.get(session);
+		try {
+			wsSession.getBasicRemote().sendText(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendWsMessage(String message) {
+		for (Session wsSession : wsSessions.values()) {
+			try {
+				wsSession.getBasicRemote().sendText(message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void logout(UUID session) {

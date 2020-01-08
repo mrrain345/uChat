@@ -1,11 +1,11 @@
 package uChat;
 
 import java.util.UUID;
-
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import com.google.gson.Gson;
 
@@ -16,12 +16,12 @@ import uChat.Json.CommandJson;
 public class WebSocketServlet {
 
 	@OnOpen
-	public void open() {
+	public void open(Session session) {
 		System.out.println("[WebSocket] Open");
 	}
 	
 	@OnClose
-	public void close() {
+	public void close(Session session) {
 		System.out.println("[WebSocket] Close");
 	}
 	
@@ -32,7 +32,7 @@ public class WebSocketServlet {
 	}
 	
 	@OnMessage
-	public String handleMessage(String message) {
+	public String handleMessage(String message, Session wsSession) {
 		Gson gson = new Gson();
 		CommandJson cmd = gson.fromJson(message, CommandJson.class);
 		UUID session = cmd.getSessionID();
@@ -43,6 +43,7 @@ public class WebSocketServlet {
 			return "{ \"error\":\"Bad session\"}";
 		}
 		
+		user.setWsSession(session, wsSession);
 		ICommandACK response = cmd.execute(user, session);
 		System.out.printf("[%s] username: \"%s\", session: \"%s\"\n>  %s\n<  %s\n\n", cmd.getCode(), user.getUsername(), cmd.getSessionID(), cmd.getData(), response.getDataJSON());
 		return response.toJSON();
