@@ -25,7 +25,9 @@ public enum CommandCode {
 	FRIEND_LIST(41), 			FRIEND_LIST_ACK(42),
 	FRIEND_ADD(43),				FRIEND_ADD_ACK(44),
 	FRIEND_REMOVE(45), 			FRIEND_REMOVE_ACK(46),
-	HEARTBEAT(47),				HEARTBEAT_ACK(48);
+	HEARTBEAT(47),				HEARTBEAT_ACK(48),
+	
+	EVENT_MESSAGE(49);
 	
 	private int value;
 	private CommandCode(int value) {

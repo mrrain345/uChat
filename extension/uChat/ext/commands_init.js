@@ -49,6 +49,7 @@ function codeToString(code) {
 		case 46: return 'FRIEND_REMOVE_ACK';
 		case 47: return 'HEARTBEAT';
 		case 48: return 'HEARTBEAT_ACK';
+		case 49: return 'EVENT_MESSAGE';
 		default: return 'UNKNOW';
 	}
 }
@@ -104,6 +105,7 @@ function command_callback(code, data) {
 		case 46: return CMD_FRIEND_REMOVE_ACK(data);
 		case 47: return CMD_HEARTBEAT(data);
 		case 48: return CMD_HEARTBEAT_ACK(data);
+		case 49: return CMD_EVENT_MESSAGE(data);
 		default: return CMD_UNKDOW(data);
 	}
 }

@@ -53,6 +53,7 @@ function getCodeID(command) {
 		case 'FRIEND_REMOVE_ACK':			return 46;
 		case 'HEARTBEAT':					return 47;
 		case 'HEARTBEAT_ACK':				return 48;
+		case 'EVENT_MESSAGE':				return 49;
 	}
 }
 
@@ -107,6 +108,7 @@ function codeToString(code) {
 		case 46: return 'FRIEND_REMOVE_ACK';
 		case 47: return 'HEARTBEAT';
 		case 48: return 'HEARTBEAT_ACK';
+		case 49: return 'EVENT_MESSAGE';
 		default: return 'UNKNOW';
 	}
 }

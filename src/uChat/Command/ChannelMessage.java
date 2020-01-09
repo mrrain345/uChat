@@ -15,11 +15,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
+import uChat.Server;
 import uChat.User;
+import uChat.UserData;
 import uChat.Command.ACK.ChannelMessageACK;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.Error.InternalServerErrorACK;
-import uChat.Command.ACK.Error.UnimplementedErrorACK;
+import uChat.Json.MessageJson;
 
 public class ChannelMessage implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -59,6 +61,7 @@ public class ChannelMessage implements ICommand {
 			statement.setInt(2, getChannelID());
 			statement.setInt(3, user.getID());
 			statement.setString(4, getMessage());
+			statement.execute();
 			
 			ResultSet res = statement.getGeneratedKeys();
 			res.next();
@@ -69,6 +72,18 @@ public class ChannelMessage implements ICommand {
 			// Commit DB connection
 			connection.commit();
 			connection.close();
+			connection = null;
+			
+			// Event: send message
+			MessageJson message = new MessageJson(messageID, getServerID(), getChannelID(), user.getID(), getMessage());
+			
+			Server server = new Server(getServerID());
+			for (UserData userData : server.getUsers().values()) {
+				System.out.printf("EVENT: MESSAGE %s\n", userData.getUsername());
+				User usr = userData.getUser();
+				if (usr != null) usr.sendMessage(message);
+			}
+			
 			return new ChannelMessageACK(getServerID(), getChannelID(), messageID, getMessage());
 				
 		} catch (Exception e) {

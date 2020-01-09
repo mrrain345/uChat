@@ -49,7 +49,12 @@ public class User implements Serializable {
 	public boolean isOnline() { return sessions.size() != 0; }
 	
 	public void sendMessage(MessageJson message) {
-		sendWsMessage(new Gson().toJson(MessageJson.class));
+		String msg = String.format(
+			"{\"code\":%d,\"status\":0,\"data\":%s}",
+			CommandCode.EVENT_MESSAGE.getValue(),
+			new Gson().toJson(message)
+		);
+		sendWsMessage(msg);
 	}
 	
 	public void sendWsMessage(UUID session, String message) {

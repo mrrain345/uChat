@@ -72,7 +72,7 @@ public class Server implements Serializable {
 			Connection connection = ds.getConnection();
 			
 			// DB: get server
-			PreparedStatement statement = connection.prepareStatement("SELECT id, name, owner_id FROM Servers WHERE id=? LIMIT 1");
+			PreparedStatement statement = connection.prepareStatement("SELECT id, name, owner_id, created_at FROM Servers WHERE id=? LIMIT 1");
 			statement.setInt(1, id);
 			ResultSet res = statement.executeQuery();
 			
