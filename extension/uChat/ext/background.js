@@ -1,5 +1,6 @@
 let webSocket = null;
 let wsPort = null;
+let messagePort = null;
 let sessionID = null;
 
 function getCodeID(command) {
@@ -199,6 +200,9 @@ chrome.runtime.onConnect.addListener(function(port) {
 				sessionID = null;
 			}
 		});
+	}
+	else if (port.name === 'Message') {
+		messagePort = port;
 	}
 	else console.error('Incorrect port:', port.name);
 });

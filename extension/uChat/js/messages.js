@@ -1,3 +1,5 @@
+let messagePort = null;
+
 let channel_messages = [
 	{ id: 1, user_id: 1, username: 'MrRaiN', message: "Hello world!" },
 	{ id: 2, user_id: 2, username: 'M0onek', message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vitae pulvinar purus. Nulla sed diam diam. Maecenas sit amet consectetur nunc, in faucibus lacus. Sed scelerisque nisl vel libero posuere tempor. Phasellus semper dapibus dictum. Quisque lacinia iaculis mauris, vitae condimentum lectus." },
@@ -25,13 +27,39 @@ function message_render() {
 }
 
 $(document).ready(function () {
+	messagePort = chrome.runtime.connect({name: "Message"});
+	messagePort.onMessage.addListener(function(data) {
+		const message = data.data;
+		console.log('NEW MESSAGE!!!', message);
+
+		if (message.server_id === nav_selected.server && message.channel_id === nav_selected.channel) {
+			const server = nav_servers.find(s => s.id === message.server_id);
+			const username = server.users.find(u => u.id === message.sender_id).username;
+			const msg = {
+				id: message.id,
+				username: username,
+				message: message.message
+			};
+			channel_messages.push(msg);
+			const html = message_to_html(msg);
+			$('#channel-messages').prepend(html);
+		}
+	});
+	
 	message_render();
 
 	$('#message-send').click(function() {
 		const msg = $('#message-box textarea').val();
 
 		// TODO
-		channel_messages.push({ id: 0, user_id: 1, username: 'MrRaiN', message: msg });
+		//channel_messages.push({ id: 0, user_id: 1, username: 'MrRaiN', message: msg });
+		if (nav_selected.server !== null) {
+			wsCommand('CHANNEL_MESSAGE', {
+				server_id: nav_selected.server,
+				channel_id: nav_selected.channel,
+				message: msg
+			});
+		}
 
 		$('#message-box textarea').val('');
 		$('#message-box textarea').css('height', '31px');

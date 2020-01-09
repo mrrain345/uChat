@@ -47,4 +47,5 @@ function CMD_FRIEND_REMOVE_ACK(data) {}
 function CMD_HEARTBEAT_ACK(data) {}
 function CMD_EVENT_MESSAGE(data) {
 	console.log('NEW MESSAGE:', data);
+	messagePort.postMessage({ data: data });
 }
