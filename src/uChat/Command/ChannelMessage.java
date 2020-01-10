@@ -79,7 +79,6 @@ public class ChannelMessage implements ICommand {
 			
 			Server server = new Server(getServerID());
 			for (UserData userData : server.getUsers().values()) {
-				System.out.printf("EVENT: MESSAGE %s\n", userData.getUsername());
 				User usr = userData.getUser();
 				if (usr != null) usr.sendMessage(message);
 			}

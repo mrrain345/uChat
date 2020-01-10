@@ -43,10 +43,26 @@ public class User implements Serializable {
 	public void setWsSession(UUID session, Session wsSession) { this.wsSessions.put(session, wsSession); }
 	public void addSession(UUID session, Session wsSession) { this.sessions.add(session); this.wsSessions.put(session, wsSession); }
 	public void addSession(UUID session) { this.sessions.add(session); }
-	public boolean removeSession(UUID session) { this.wsSessions.remove(session); return this.sessions.remove(session); }
 	public boolean hasSession(UUID session) { return this.sessions.contains(session); }
 	
 	public boolean isOnline() { return sessions.size() != 0; }
+	
+	public boolean removeSession(UUID session) {
+		wsSessions.remove(session);
+		return sessions.remove(session);
+	}
+	
+	public boolean removeSession(Session wsSession) {
+		for (int i = 0; i < sessions.size(); i++) {
+			UUID session = sessions.get(i);
+			if (wsSessions.containsKey(session)) {
+				wsSessions.remove(session);
+				sessions.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public void sendMessage(MessageJson message) {
 		String msg = String.format(
@@ -67,7 +83,10 @@ public class User implements Serializable {
 	}
 	
 	public void sendWsMessage(String message) {
-		for (Session wsSession : wsSessions.values()) {
+		for (UUID session : sessions) {
+			Session wsSession = wsSessions.get(session);
+		//for (Session wsSession : wsSessions.values()) {
+			System.out.printf("EVENT: MESSAGE '%s' %s\n", getUsername(), session.toString());
 			try {
 				wsSession.getBasicRemote().sendText(message);
 			} catch (IOException e) {

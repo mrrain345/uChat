@@ -23,6 +23,7 @@ public class WebSocketServlet {
 	@OnClose
 	public void close(Session session) {
 		System.out.println("[WebSocket] Close");
+		Users.removeSession(session);
 	}
 	
 	@OnError
@@ -37,6 +38,14 @@ public class WebSocketServlet {
 		CommandJson cmd = gson.fromJson(message, CommandJson.class);
 		UUID session = cmd.getSessionID();
 		User user = Users.findUser(session);
+		
+		if (user == null)
+			try {
+				user = Users.authenticate(session);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "{ \"error\":\"Bad session\"}";
+			}
 		
 		if (user == null) {
 			System.err.printf("[BAD SESSION] \"%s\"\n", cmd.getSessionID());

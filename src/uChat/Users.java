@@ -10,6 +10,7 @@ import java.util.UUID;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import javax.websocket.Session;
 
 import uChat.Json.LoginJson;
 
@@ -25,13 +26,7 @@ public class Users {
 				if (sess.equals(session)) return user;
 			}
 		}
-		
-		try {
-			return authenticate(session);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+		return null;
 	}
 	
 	public static User findUser(int id) {
@@ -39,6 +34,16 @@ public class Users {
 			if (user.getID() == id) return user;
 		}
 		return null;
+	}
+	
+	public static boolean removeSession(Session wsSession) {
+		for (int i = 0; i < users.size(); i++) {
+			if (users.get(i).removeSession(wsSession)) {
+				if (!users.get(i).isOnline()) users.remove(i);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	static {
