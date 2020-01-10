@@ -132,7 +132,6 @@ function wsSendMessage(command, session, message) {
 }
 
 function wsCommand(command, data) {
-	console.log(command);
 	wsSendMessage(command, sessionID, data);
 }
 

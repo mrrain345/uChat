@@ -13,19 +13,30 @@
 	<script src="js/main.js"></script>
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="position: fixed; width: 350px; max-height: 500px;">
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-nav">
-			<span class="navbar-toggler-icon"></span>
-		</button>
+	<nav id="nav" class="navbar navbar-dark bg-dark">
+		<button id="menu-btn" class="btn btn-dark nav-btn"><i class="material-icons">menu</i></button>
 		<span class="navbar-brand">µChat</span>
-		<button id="logout-btn" class="btn btn-dark" title="Logout"><i class="material-icons">input</i></button>
-		<div class="collapse navbar-collapse" id="navbar-nav">
-			<span id="server-list"></span>
+		<button id="logout-btn" class="btn btn-dark nav-btn" title="Logout"><i class="material-icons">input</i></button>
+		<div id="server-list">
+			<ul class="navbar-nav">
+				<div style="margin-top: 10px;">
+					<span class="nav-section">Servers:</span>
+					<button id="server-create-btn" class="btn btn-dark float-right nav-add-btn" title="Create server"><i class="material-icons">add</i></button>
+				</div>
+				<span id="server-list-data"></span>
+			</ul>
+
+			<div style="margin-top: 10px;">
+				<span class="nav-section">Members:</span>
+				<button id="member-add-btn" class="btn btn-dark float-right nav-add-btn" title="Add member"><i class="material-icons">add</i></button>
+			</div>
+			<div id="server-members-list"></div>
 		</div>
 	</nav>
 
 	<div style="height: 56px;"></div>
 	<div id="channel-messages"></div>
+	
 	<div id="message-box">
 		<textarea class="form-control" placeholder="Send message..."></textarea>
 		<i id="message-send" class="material-icons">send</i>

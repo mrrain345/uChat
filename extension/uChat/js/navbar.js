@@ -1,6 +1,8 @@
 let nav_servers = [];
 let nav_selected = { server: null, channel: 0 }
 let nav_serverPort = null;
+const slideDuration = 200;
+const menuDuration = 300;
 
 function nav_update_members() {
 	let users = [];
@@ -15,28 +17,55 @@ function nav_update_members() {
 	let html = '';
 	for (let i = 0; i < users.length; i++) {
 		const user = users[i];
-		html = `${html}<li class="nav-link">${user.username}</li>`
+		html = `${html}<div>${user.username}</div>`
 	}
 
 	$('#server-members-list').html(html);
 }
 
 function nav_select(server, channel) {
-	console.log('change select:', server, channel);
-	if (nav_selected.server !== null) {
-		$(`#nav-server-${nav_selected.server}-channel-${nav_selected.channel}`).removeClass('active');
-		if (nav_selected.server !== server) {
-			$(`#nav-server-${nav_selected.server} .dropdown-menu`).dropdown('hide');
-			$(`#nav-server-${nav_selected.server}`).addClass('show');
-		}
-	}
-
-	$(`#nav-server-${server}-channel-${channel}`).addClass('active');
-	$(`#nav-server-${server}`).addClass('show');
 	nav_selected.server = server;
 	nav_selected.channel = channel;
 	nav_update_members();
 	messages_sync(server, channel);
+
+	$('.nav-server').removeClass('active show');
+	$('.nav-channel').removeClass('active');
+
+	$(`#nav-server-${server}`).addClass('active');
+	$(`#nav-server-${server}-channel-${channel}`).addClass('active');
+	$(`#nav-server-${server} .nav-channels`).slideDown(slideDuration);
+
+	$('.nav-server:not(.active)').each(function() {
+		$(this).find('.nav-channels').slideUp(slideDuration);
+		$(this).removeClass('show');
+	});
+}
+
+function navbar_setup() {
+	$('.nav-server').click(function(e) {
+		if ($(this).hasClass('active')) return;
+
+		if (!$(this).hasClass('show')) {
+			$('.nav-server:not(.active)').each(function() {
+				$(this).find('.nav-channels').slideUp(slideDuration);
+				$(this).removeClass('show');
+			});
+			$(this).addClass('show');
+			$(this).find('.nav-channels').slideDown(slideDuration);
+		} else {
+			$(this).removeClass('show');
+			$(this).find('.nav-channels').slideUp(slideDuration);
+		}
+	});
+
+	$('.nav-channel').click(function(e) {
+		const split = $(e.currentTarget).attr('id').split('-');
+		nav_select(parseInt(split[2]), parseInt(split[4]));
+		$('#menu-btn').removeClass('nav-active');
+		$('#server-list').slideUp(menuDuration);
+		$('#server-list').removeClass('active');
+	});
 }
 
 function nav_render() {
@@ -48,49 +77,19 @@ function nav_render() {
 		
 		for (var j = 0; j < server.channels.length; j++) {
 			const channel = server.channels[j];
-			channels_html = `${channels_html}<span class="dropdown-item nav-channel" id="nav-server-${server.id}-channel-${channel.id}">${channel.name}</span>`;
+			channels_html = `${channels_html}<div class="nav-channel" id="nav-server-${server.id}-channel-${channel.id}">${channel.name}</div>`;
 		}
-		
-		servers_html = `${servers_html}<li class="nav-item dropdown nav-server" id="nav-server-${server.id}">
-			<span class="nav-link dropdown-toggle">${server.name}</span>
-			<div class="dropdown-menu">${channels_html}</div>
-		</li>`;
+
+		servers_html = `${servers_html}
+		<li class="nav-item nav-server" id="nav-server-${server.id}">
+			<span class="nav-server-name">${server.name}</span>
+			<button class="btn btn-dark float-right nav-add-btn" title="Create channel"><i class="material-icons">add</i></button>
+			<div class="nav-channels">${channels_html}</div>
+		</li>`
 	}
-	
-	const html = `
-<ul class="navbar-nav">
-	<li class="nav-item active">
-		<span class="nav-link">
-			Servers:<button id="server-create-btn" class="btn btn-dark float-right">+</button>
-		</span>
-	</li>
-	${servers_html}
-	<li class="nav-item active">
-		<span class="nav-link">Members:</span>
-	</li>
-	<ul id="server-members-list" class="navbar-nav"></ul>
-</ul>`;
-	
-	$('#server-list').html(html);
 
-	$('.nav-server').click(function(e) {
-		const target = e.currentTarget;
-		$('.nav-server .dropdown-menu').dropdown('hide');
-		$(`#nav-server-${nav_selected.server}-channel-${nav_selected.channel}`).dropdown('show');
-		$(target).find('.dropdown-menu').dropdown('show');
-		$(`.nav-server`).removeClass('show');
-		if (nav_selected.server !== null) $(`#nav-server-${nav_selected.server}`).addClass('show');
-	});
-
-	$('.nav-channel').click(function(e) {
-		const split = $(e.currentTarget).attr('id').split('-');
-		nav_select(parseInt(split[2]), parseInt(split[4]));
-	});
-
-	$('#server-create-btn').click(function() {
-		let name = window.prompt("Server name:");
-		if (name !== null && name !== '') wsCommand('SERVER_CREATE', { server_name: name });
-	});
+	$('#server-list-data').html(servers_html);
+	navbar_setup();
 }
 
 $(document).ready(function() {
@@ -99,8 +98,7 @@ $(document).ready(function() {
 		if (data.command === 'SERVERS_REFRESH') {
 			nav_servers = data.servers;
 			if (nav_selected.server === null && nav_servers.length > 0) {
-				nav_selected.server = nav_servers[0].id;
-				nav_selected.channel = nav_servers[0].channels[0].id;
+				nav_select(nav_servers[0].id, nav_servers[0].channels[0].id);
 			}
 
 			nav_render();
@@ -112,14 +110,20 @@ $(document).ready(function() {
 		}
 	});
 
-	$('button[data-target="#navbar-nav"]').click(function() {
-		if (nav_selected.server !== null) {
-			$('.nav-server .dropdown-menu').dropdown('hide');
-			$(`.nav-server`).removeClass('show');
-			nav_select(nav_selected.server, nav_selected.channel);
-			$(`#nav-server-${nav_selected.server}-channel-${nav_selected.channel}`).dropdown('show');
-			$(`#nav-server-${nav_selected.server}`).addClass('show');
+	$('#menu-btn').click(function(e) {
+		$(this).toggleClass('nav-active');
+		if ($(this).hasClass('nav-active')) {
+			$('#server-list').slideDown(menuDuration);
+			$('#server-list').addClass('active');
+		} else {
+			$('#server-list').slideUp(menuDuration);
+			$('#server-list').removeClass('active');
 		}
+	});
+
+	$('#server-create-btn').click(function() {
+		let name = window.prompt("Server name:");
+		if (name !== null && name !== '') wsCommand('SERVER_CREATE', { server_name: name });
 	});
 
 	nav_serverPort.postMessage({

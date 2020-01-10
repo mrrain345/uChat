@@ -56,6 +56,7 @@ function CMD_FRIEND_ADD_ACK(data) {}
 function CMD_FRIEND_REMOVE_ACK(data) {}
 function CMD_HEARTBEAT_ACK(data) {}
 function CMD_EVENT_MESSAGE(data) {
+	console.log('EVENT_MESSAGE:', data);
 	if (data.server_id !== messagesData.server_id || data.channel_id !== messagesData.channel_id) return;
 	if (messagesData.messages !== null) messagesData.messages.push(data);
 	messagePort.postMessage({ command: 'NEW_MESSAGE', data: data });
