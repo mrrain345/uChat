@@ -19,7 +19,6 @@ import uChat.User;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ServerCreateACK;
 import uChat.Command.ACK.Error.InternalServerErrorACK;
-import uChat.Command.ACK.Error.UnimplementedErrorACK;
 
 public class ServerCreate implements ICommand {
 	private static final long serialVersionUID = 1L;

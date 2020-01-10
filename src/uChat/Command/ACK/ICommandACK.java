@@ -1,9 +1,7 @@
 package uChat.Command.ACK;
 
 import java.io.Serializable;
-
 import com.google.gson.Gson;
-
 import uChat.CommandCode;
 import uChat.Command.ACK.Error.ErrorACK;
 

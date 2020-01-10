@@ -2,6 +2,7 @@ let webSocket = null;
 let wsPort = null;
 let messagePort = null;
 let sessionID = null;
+let messagesData = null;
 
 function getCodeID(command) {
 	switch(command) {
@@ -182,7 +183,7 @@ chrome.runtime.onConnect.addListener(function(port) {
 	if (port.name === 'WebSocket') {
 		wsPort = port;
 		wsPort.onMessage.addListener(function(msg) {
-			wsSendMessage(msg.command, sessionID, msg.data);
+			wsCommand(msg.command, msg.data);
 		});
 	}
 	else if (port.name === 'Servers') {
@@ -203,6 +204,25 @@ chrome.runtime.onConnect.addListener(function(port) {
 	}
 	else if (port.name === 'Message') {
 		messagePort = port;
+		messagePort.onMessage.addListener(function(msg) {
+			if (msg.command !== 'SYNC') return;
+			if (messagesData !== null && messagesData.server_id === msg.server_id && messagesData.channel_id === msg.channel_id) {
+				messagePort.postMessage({
+					command: 'SYNC',
+					server_id: messagesData.server_id,
+					channel_id: messagesData.channel_id,
+					messages: messagesData.messages
+				});
+			} else {
+				messagesData = {
+					server_id: msg.server_id,
+					channel_id: msg.channel_id,
+					messages: null
+				}
+				wsCommand('SERVER_SYNC', { server_id: msg.server_id, channel_id: msg.channel_id });
+			}
+			
+		});
 	}
 	else console.error('Incorrect port:', port.name);
 });

@@ -1,5 +1,15 @@
 function CMD_UNKNOW(data) {}
-function CMD_SERVER_SYNC_ACK(data) {}
+function CMD_SERVER_SYNC_ACK(data) {
+	if (data.server_id !== messagesData.server_id || data.channel_id !== messagesData.channel_id) return;
+	messagesData.messages = data.messages;
+
+	messagePort.postMessage({
+		command: 'SYNC',
+		server_id: messagesData.server_id,
+		channel_id: messagesData.channel_id,
+		messages: messagesData.messages
+	});
+}
 function CMD_SERVER_GET_ROLES_ACK(data) {}
 
 function CMD_SERVER_GET_USERS_ACK(data) {
@@ -46,6 +56,7 @@ function CMD_FRIEND_ADD_ACK(data) {}
 function CMD_FRIEND_REMOVE_ACK(data) {}
 function CMD_HEARTBEAT_ACK(data) {}
 function CMD_EVENT_MESSAGE(data) {
-	console.log('NEW MESSAGE:', data);
-	messagePort.postMessage({ data: data });
+	if (data.server_id !== messagesData.server_id || data.channel_id !== messagesData.channel_id) return;
+	if (messagesData.messages !== null) messagesData.messages.push(data);
+	messagePort.postMessage({ command: 'NEW_MESSAGE', data: data });
 }

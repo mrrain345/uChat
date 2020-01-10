@@ -36,6 +36,7 @@ function nav_select(server, channel) {
 	nav_selected.server = server;
 	nav_selected.channel = channel;
 	nav_update_members();
+	messages_sync(server, channel);
 }
 
 function nav_render() {
@@ -93,18 +94,21 @@ function nav_render() {
 }
 
 $(document).ready(function() {
-	let nav_first = true;
 	nav_serverPort = chrome.runtime.connect({name: "Servers"});
 	nav_serverPort.onMessage.addListener(function(data) {
 		if (data.command === 'SERVERS_REFRESH') {
 			nav_servers = data.servers;
+			if (nav_selected.server === null && nav_servers.length > 0) {
+				nav_selected.server = nav_servers[0].id;
+				nav_selected.channel = nav_servers[0].channels[0].id;
+			}
+
 			nav_render();
 			if (nav_selected.server !== null) {
 				nav_select(nav_selected.server, nav_selected.channel);
 				$(`#nav-server-${nav_selected.server}-channel-${nav_selected.channel}`).dropdown('show');
 				$(`#nav-server-${nav_selected.server}`).addClass('show');
 			}
-			console.log(data);
 		}
 	});
 
@@ -120,7 +124,6 @@ $(document).ready(function() {
 
 	nav_serverPort.postMessage({
 		command: 'SERVERS_REFRESH',
-		first: nav_first
+		first: true
 	});
-	nav_first = false;
 });

@@ -2,10 +2,8 @@ package uChat.Command;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.UUID;
 
 import javax.naming.Context;
@@ -17,11 +15,9 @@ import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
 import uChat.User;
-import uChat.Command.ACK.ChannelCreateACK;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ServerAddUserACK;
 import uChat.Command.ACK.Error.InternalServerErrorACK;
-import uChat.Command.ACK.Error.UnimplementedErrorACK;
 
 public class ServerAddUser implements ICommand {
 	private static final long serialVersionUID = 1L;
