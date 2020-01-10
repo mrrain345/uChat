@@ -4,6 +4,10 @@ body {
 	background-color: #49525A;
 }
 
+.white-window {
+	background-color: #FFFFFF;
+}
+
 .alert:empty {
 	display: none;
 }
@@ -19,6 +23,11 @@ body {
 
 #logout-btn:hover {
 	color: rgba(255,255,255,.8);
+}
+
+#navbar-nav {
+	max-height: 444px;
+	overflow-y: auto;
 }
 
 #channel-messages {
@@ -50,6 +59,7 @@ body {
 	right: 0;
 	bottom: 0;
 	padding-top: 5px;
+	z-index: 10;
 }
 
 #message-box textarea {

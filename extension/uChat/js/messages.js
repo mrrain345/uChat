@@ -39,9 +39,17 @@ function messages_sync(server_id, channel_id) {
 	});
 }
 
-$(document).ready(function () {
+function messages_initialize() {
 	messagePort = chrome.runtime.connect({name: "Message"});
 	messagePort.onMessage.addListener(function(data) {
+		if (data.command === 'STATE') {
+			console.log('STATE:', data);
+			if (data.status) {
+				nav_select(data.server_id, data.channel_id);
+				channel_messages = data.messages;
+				message_render();
+			}
+		}
 		if (data.command === 'SYNC') {
 			if (data.server_id !== nav_selected.server || data.channel_id !== nav_selected.channel) return;
 			channel_messages = data.messages;
@@ -63,7 +71,7 @@ $(document).ready(function () {
 		}
 	});
 	
-	message_render();
+	messagePort.postMessage({ command: 'STATE' });
 
 	$('#message-send').click(function() {
 		const msg = $('#message-box textarea').val();
@@ -83,4 +91,4 @@ $(document).ready(function () {
 		$('#message-box textarea').css('overflow-y', 'hidden');
 		message_render();
 	});
-});
+}

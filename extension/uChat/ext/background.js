@@ -205,23 +205,39 @@ chrome.runtime.onConnect.addListener(function(port) {
 	else if (port.name === 'Message') {
 		messagePort = port;
 		messagePort.onMessage.addListener(function(msg) {
-			if (msg.command !== 'SYNC') return;
-			if (messagesData !== null && messagesData.server_id === msg.server_id && messagesData.channel_id === msg.channel_id) {
-				messagePort.postMessage({
-					command: 'SYNC',
-					server_id: messagesData.server_id,
-					channel_id: messagesData.channel_id,
-					messages: messagesData.messages
-				});
-			} else {
-				messagesData = {
-					server_id: msg.server_id,
-					channel_id: msg.channel_id,
-					messages: null
+			if (msg.command === 'STATE') {
+				if (messagesData !== null) {
+					messagePort.postMessage({
+						command: 'STATE',
+						status: true,
+						server_id: messagesData.server_id,
+						channel_id: messagesData.channel_id,
+						messages: messagesData.messages
+					});
+				} else {
+					messagePort.postMessage({
+						command: 'STATE',
+						status: false
+					});
 				}
-				wsCommand('SERVER_SYNC', { server_id: msg.server_id, channel_id: msg.channel_id });
 			}
-			
+			if (msg.command === 'SYNC') {
+				if (messagesData !== null && messagesData.server_id === msg.server_id && messagesData.channel_id === msg.channel_id) {
+					messagePort.postMessage({
+						command: 'SYNC',
+						server_id: messagesData.server_id,
+						channel_id: messagesData.channel_id,
+						messages: messagesData.messages
+					});
+				} else {
+					messagesData = {
+						server_id: msg.server_id,
+						channel_id: msg.channel_id,
+						messages: null
+					}
+					wsCommand('SERVER_SYNC', { server_id: msg.server_id, channel_id: msg.channel_id });
+				}
+			}
 		});
 	}
 	else console.error('Incorrect port:', port.name);

@@ -126,4 +126,6 @@ $(document).ready(function() {
 		command: 'SERVERS_REFRESH',
 		first: true
 	});
+
+	messages_initialize();
 });
