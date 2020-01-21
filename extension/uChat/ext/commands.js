@@ -16,7 +16,19 @@ function CMD_SERVER_GET_USERS_ACK(data) {
 	servers_set_users(data.server_id, data.users);
 }
 
-function CMD_SERVER_ADD_USER_ACK(data) {}
+function CMD_SERVER_ADD_USER_ACK(data) {
+  if (data.success) {
+    servers_add_user(data.server_id, data.user_id, data.username);
+  } else {
+    if (uchat_server_port === null) return;
+
+    uchat_server_port.postMessage({
+      command: 'USER_ADD_FAIL',
+      username: data.username
+    });
+  }
+}
+
 function CMD_ROLE_GET_PERMISSIONS_ACK(data) {}
 function CMD_ROLE_SET_PERMISSIONS_ACK(data) {}
 function CMD_USER_GET_ROLES_ACK(data) {}
@@ -24,7 +36,10 @@ function CMD_USER_SET_ROLES_ACK(data) {}
 function CMD_SERVER_DESTROY_ACK(data) {}
 function CMD_SERVER_REMOVE_ROLE_ACK(data) {}
 function CMD_SERVER_LEAVE_ACK(data) {}
-function CMD_CHANNEL_CREATE_ACK(data) {}
+
+function CMD_CHANNEL_CREATE_ACK(data) {
+  servers_add_channel(data.server_id, data.channel_id, data.channel_name);
+}
 
 function CMD_CHANNEL_LIST_ACK(data) {
 	servers_set_channels(data.server_id, data.channels);

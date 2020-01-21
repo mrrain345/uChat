@@ -47,6 +47,19 @@ function servers_set_channels(server_id, channels) {
 	servers_refresh();
 }
 
+function servers_add_channel(server_id, channel_id, channel_name) {
+	uchat_servers_refresh = true;
+	for (let i = 0; i < uchat_servers.length; i++) {
+		if (uchat_servers[i].id !== server_id) continue;
+		uchat_servers[i].channels.push({
+			id: channel_id,
+			name: channel_name
+		});
+		break;
+	}
+	servers_refresh();
+}
+
 function servers_set_users(server_id, users) {
 	uchat_servers_refresh = true;
 	const uchat_users = [];
@@ -66,16 +79,16 @@ function servers_set_users(server_id, users) {
 	servers_refresh();
 }
 
-function servers_set_channel(server_id, channel) {
-	uchat_servers_refresh = true;
-	for (let i = 0; i < uchat_servers.length; i++) {
+function servers_add_user(server_id, user_id, username) {
+  uchat_servers_refresh = true;
+  for (let i = 0; i < uchat_servers.length; i++) {
 		if (uchat_servers[i].id !== server_id) continue;
-		uchat_servers[i].channels.push({
-			id: channel.channel_id,
-			name: channel.channel_name
+		uchat_servers[i].users.push({
+			id: user_id,
+			username: username
 		});
 		break;
-	}
+  }
 	servers_refresh();
 }
 

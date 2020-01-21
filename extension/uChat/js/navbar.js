@@ -65,7 +65,15 @@ function navbar_setup() {
 		$('#menu-btn').removeClass('nav-active');
 		$('#server-list').slideUp(menuDuration);
 		$('#server-list').removeClass('active');
-	});
+  });
+  
+  $('.nav-add-channel').click(function() {
+    const id = parseInt($(this).parent().attr('id').split('-')[2]);
+    let name = window.prompt("Channel name:");
+    if (name === null) return;
+    else if (name.length < 3 || name.length > 35) alert ("Incorrect channel name (min: 3, max: 35 characters)");
+    else wsCommand('CHANNEL_CREATE', { server_id: id, channel_name: name });
+  });
 }
 
 function nav_render() {
@@ -83,10 +91,10 @@ function nav_render() {
 		servers_html = `${servers_html}
 		<li class="nav-item nav-server" id="nav-server-${server.id}">
 			<span class="nav-server-name">${server.name}</span>
-			<button class="btn btn-dark float-right nav-add-btn" title="Create channel"><i class="material-icons">add</i></button>
+			<button class="btn btn-dark float-right nav-add-btn nav-add-channel" title="Create channel"><i class="material-icons">add</i></button>
 			<div class="nav-channels">${channels_html}</div>
 		</li>`
-	}
+  }
 
 	$('#server-list-data').html(servers_html);
 	navbar_setup();
@@ -107,7 +115,11 @@ $(document).ready(function() {
 				$(`#nav-server-${nav_selected.server}-channel-${nav_selected.channel}`).dropdown('show');
 				$(`#nav-server-${nav_selected.server}`).addClass('show');
 			}
-		}
+    }
+    
+    if (data.command === 'USER_ADD_FAIL') {
+      alert("User '" + data.username + "' doesn't exist");
+    }
 	});
 
 	$('#menu-btn').click(function(e) {
@@ -122,9 +134,18 @@ $(document).ready(function() {
 	});
 
 	$('#server-create-btn').click(function() {
-		let name = window.prompt("Server name:");
-		if (name !== null && name !== '') wsCommand('SERVER_CREATE', { server_name: name });
-	});
+    let name = window.prompt("Server name:");
+    if (name === null) return;
+    else if (name.length < 3 || name.length > 80) alert ("Incorrect server name (min: 3, max: 80 characters)");
+    else wsCommand('SERVER_CREATE', { server_name: name });
+  });
+  
+  $('#member-add-btn').click(function() {
+    if (nav_selected.server === null) return;
+    let name = window.prompt("Username:");
+    if (name === null) return;
+    else wsCommand('SERVER_ADD_USER', { server_id: nav_selected.server, username: name });
+  });
 
 	nav_serverPort.postMessage({
 		command: 'SERVERS_REFRESH',

@@ -15,6 +15,7 @@ import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
 import uChat.User;
+import uChat.UserData;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ServerAddUserACK;
 import uChat.Command.ACK.Error.InternalServerErrorACK;
@@ -24,13 +25,13 @@ public class ServerAddUser implements ICommand {
 	public CommandCode getCode() { return CommandCode.SERVER_ADD_USER; }
 	
 	private int server_id;
-	private int user_id;
+	private String username;
 	
 	public int getServerID() { return server_id; }
-	public int getUserID() { return user_id; }
+	public String getUsername() { return username; }
 	
 	public void setServerID(int server_id) { this.server_id = server_id; }
-	public void setUserID(int user_id) { this.user_id = user_id; }
+	public void setUsername(String username) { this.username = username; }
 	
 	public static ServerAddUser initialize(JsonElement data) {
 		return new Gson().fromJson(data, ServerAddUser.class);
@@ -40,6 +41,9 @@ public class ServerAddUser implements ICommand {
 		
 		Connection connection = null;
 		
+		UserData userData = UserData.find(getUsername());
+		if (userData == null) return new ServerAddUserACK(getServerID(), false, getUsername());
+		
 		try {
 			// Create DB connection
 			Context context = new InitialContext();
@@ -48,10 +52,12 @@ public class ServerAddUser implements ICommand {
 			connection = ds.getConnection();
 			connection.setAutoCommit(false);
 			
+			
+			
 			// DB: add channel
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO Server_Members (server_id, user_id) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			statement.setInt(1, getServerID());
-			statement.setInt(2, getUserID());
+			statement.setInt(2, userData.getID());
 			statement.execute();
 
 			statement.close();
@@ -59,7 +65,7 @@ public class ServerAddUser implements ICommand {
 			// Commit DB connection
 			connection.commit();
 			connection.close();
-			return new ServerAddUserACK(getServerID(), getUserID());
+			return new ServerAddUserACK(getServerID(), userData.getID(), userData.getUsername());
 				
 		} catch (Exception e) {
 			if (connection != null) {

@@ -153,7 +153,7 @@ function wsOnMessage(message) {
   command_callback(data.code, data.data);
 }
 
-function wsOnClose(message) {
+function wsOnClose() {
   console.log("[WebSocket] Disconnected");
   //wsConnect();
 }
@@ -192,11 +192,9 @@ chrome.runtime.onConnect.addListener(function(port) {
 	}
 	else if (port.name === 'Login') {
 		port.onMessage.addListener(function(msg) {
-      console.log("Login:", msg.login, "sessionID:", msg.session);
 			if (msg.login) {
         sessionID = msg.session;
         wsConnect();
-        port.postMessage({ command: 'redirect', location: '/index.html' });
 			} else {
 				wsClose();
         sessionID = null;
