@@ -10,9 +10,10 @@ function message_to_html(message) {
 }
 
 function get_username(user_id) {
-	if (nav_selected.server === null) return null;
-	const users = nav_servers.find(s => s.id === nav_selected.server).users;
-	return users.find(u => u.id === user_id).username;
+  if (nav_selected.server === null) return null;
+  const server = nav_servers.find(s => s.id === nav_selected.server)
+  if (server == null || server.users == null) return null;
+	return server.users.find(u => u.id === user_id).username;
 }
 
 function message_render() {

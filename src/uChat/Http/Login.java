@@ -28,10 +28,7 @@ public class Login extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Content-Type", "application/json");
-		if (request.getRequestURI().split("/").length != 2) { response.setStatus(404); return; }
-		
-		PrintWriter out = response.getWriter();
-		out.println("{ \"message\": \"Hello world!\" }");
+		response.setStatus(404);
 	}
 
 	@Override
@@ -49,7 +46,6 @@ public class Login extends HttpServlet {
 			PrintWriter out = response.getWriter();
 			
 			if (user != null) {
-				System.out.println(user);
 				List<UUID> sessions = user.getSessions();
 				out.println("{ \"login\": true, \"session_id\": \"" + sessions.get(sessions.size()-1) + "\" }");
 				System.out.printf("[SESSION CREATED] username: \"%s\", session: \"%s\"\n", user.getUsername(), sessions.get(sessions.size()-1));

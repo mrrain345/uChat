@@ -5,6 +5,12 @@ $(document).ready(function() {
 	
 	$('#login-form').submit(function(e) {
     let loginPort = chrome.runtime.connect({name: "Login"});
+    loginPort.onMessage.addListener(function(msg) {
+      if (msg.command === 'redirect') {
+        window.location = msg.location;
+      }
+    });
+
 		let username = $('#username').val();
 		let password = $('#password').val();
 		
@@ -23,7 +29,6 @@ $(document).ready(function() {
 				if (res.login) {
 					chrome.storage.local.set({ "sessionID": res.session_id }, function(){
             loginPort.postMessage({ login: true, session: res.session_id });
-            window.location = '/index.html';
 					});
 				} else $('#login-alert').text('Bad login or password');
 			},
@@ -34,5 +39,52 @@ $(document).ready(function() {
 		});
 		
 		e.preventDefault();
-	});
+  });
+  
+  $('#register-btn').click(function(e) {
+    window.location = '/register.html';
+    e.preventDefault();
+  });
+
+  $('#login-btn').click(function(e) {
+    window.location = "/login.html";
+    e.preventDefault();
+  });
+
+  $('#register-form').submit(function(e) {
+    let loginPort = chrome.runtime.connect({name: "Login"});
+		let username = $('#username').val();
+    let password = $('#password').val();
+    let confirm_password = $('#confirm_password').val();
+    let email = $('#email').val();
+		
+		$.ajax({
+			type: 'POST',
+			url: 'http://localhost:8080/register',
+			contentType: 'application/json',
+			crossDomain: true,
+			cache: false,
+			dataType: 'json',
+			data: JSON.stringify({
+				username: username,
+        password: password,
+        confirm_password: confirm_password,
+        email: email
+			}),
+			success: function (res) {
+				if (res.success) {
+					chrome.storage.local.set({ "sessionID": res.session_id }, function(){
+            loginPort.postMessage({ login: true, session: res.session_id });
+            window.location = '/index.html';
+					});
+				} else $('#register-alert').text(res.error);
+			},
+			error: function (res) {
+				$('#register-alert').text('Connection failed ;(');
+				console.log(res);
+			}
+		});
+		
+		e.preventDefault();
+  });
 });

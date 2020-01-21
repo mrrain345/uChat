@@ -117,7 +117,7 @@ function codeToString(code) {
 
 function wsSendMessage(command, session, message) {
 	if (!session) {
-		console.error("["+command+"] You are not logged in. Failed to send:", message);
+		console.log("["+command+"] You are not logged in. Failed to send:", message);
 		return;
 	}
 	
@@ -127,8 +127,8 @@ function wsSendMessage(command, session, message) {
 		data: message
 	};
 	
-    webSocket.send(JSON.stringify(data));
-    console.log("> ["+command+"]", message);
+  webSocket.send(JSON.stringify(data));
+  console.log("> ["+command+"]", message);
 }
 
 function wsCommand(command, data) {
@@ -136,30 +136,30 @@ function wsCommand(command, data) {
 }
 
 function wsClose() {
-    webSocket.close();
-    console.log("[WebSocket] Closed");
+  webSocket.close();
+  console.log("[WebSocket] Closed");
 }
 
-function wsOnOpen(message) {
+function wsOnOpen() {
 	console.log("[WebSocket] Connected");
 	wsCommand('SERVER_LIST', {});
 }
 
 function wsOnMessage(message) {
 	const data = JSON.parse(message.data);
-    if (data.status === 0) console.log("< ["+codeToString(data.code)+"]", data.data);
-    else console.error("["+codeToString(data.code)+"] ("+data.status+")", data.error);
-    
-    command_callback(data.code, data.data);
+  if (data.status === 0) console.log("< ["+codeToString(data.code)+"]", data.data);
+  else console.error("["+codeToString(data.code)+"] ("+data.status+")", data.error);
+  
+  command_callback(data.code, data.data);
 }
 
 function wsOnClose(message) {
-    console.log("[WebSocket] Disconnected");
-    wsConnect();
+  console.log("[WebSocket] Disconnected");
+  //wsConnect();
 }
 
 function wsOnError(message) {
-    console.error("[WebSocket Error]", message);
+  console.error("[WebSocket Error]", message);
 }
 
 function wsConnect() {
@@ -172,7 +172,7 @@ function wsConnect() {
 }
 
 chrome.storage.local.get("sessionID", function(result) {
-    if (result.sessionID !== undefined) {
+  if (result.sessionID !== undefined) {
 		sessionID = result.sessionID;
 		wsConnect();
 	}
@@ -192,12 +192,18 @@ chrome.runtime.onConnect.addListener(function(port) {
 	}
 	else if (port.name === 'Login') {
 		port.onMessage.addListener(function(msg) {
+      console.log("Login:", msg.login, "sessionID:", msg.session);
 			if (msg.login) {
-				sessionID = msg.session;
-				wsConnect();
+        sessionID = msg.session;
+        wsConnect();
+        port.postMessage({ command: 'redirect', location: '/index.html' });
 			} else {
 				wsClose();
-				sessionID = null;
+        sessionID = null;
+        uchat_servers = [];
+        uchat_servers_refresh = true;
+        sessionID = msg.session;
+        messagesData = null;
 			}
 		});
 	}
