@@ -16,6 +16,8 @@ import javax.websocket.Session;
 import com.google.gson.Gson;
 
 import uChat.Json.MessageJson;
+import uChat.Json.ServerChannelJson;
+import uChat.Json.ServerUserJson;
 
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -64,11 +66,31 @@ public class User implements Serializable {
 		return false;
 	}
 	
-	public void sendMessage(MessageJson message) {
+	public void sendMessageEvent(MessageJson message) {
+		sendEvent(CommandCode.EVENT_MESSAGE, new Gson().toJson(message));
+	}
+	
+	public void sendChannelCreatedEvent(ServerChannelJson channel) {
+		sendEvent(CommandCode.EVENT_CHANNEL_CREATED, new Gson().toJson(channel));
+	}
+	
+	public void sendChannelRemovedEvent(ServerChannelJson channel) {
+		sendEvent(CommandCode.EVENT_CHANNEL_REMOVED, new Gson().toJson(channel));
+	}
+	
+	public void sendUserAddedEvent(ServerUserJson user) {
+		sendEvent(CommandCode.EVENT_USER_ADDED, new Gson().toJson(user));
+	}
+	
+	public void sendUserRemovedEvent(ServerUserJson user) {
+		sendEvent(CommandCode.EVENT_USER_REMOVED, new Gson().toJson(user));
+	}
+	
+	public void sendEvent(CommandCode command, String event) {
 		String msg = String.format(
 			"{\"code\":%d,\"status\":0,\"data\":%s}",
-			CommandCode.EVENT_MESSAGE.getValue(),
-			new Gson().toJson(message)
+			command.getValue(),
+			event
 		);
 		sendWsMessage(msg);
 	}

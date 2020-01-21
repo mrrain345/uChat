@@ -15,6 +15,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import uChat.Json.MessageJson;
+import uChat.Json.ServerChannelJson;
+import uChat.Json.ServerUserJson;
+
 public class Server implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -56,6 +60,41 @@ public class Server implements Serializable {
 			servers.add(this);
 		} catch(IllegalArgumentException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public void sendMessageEvent(MessageJson data) {
+		for (UserData userData : getUsers().values()) {
+			User user = userData.getUser();
+			if (user != null) user.sendMessageEvent(data);
+		}
+	}
+	
+	public void sendChannelCreatedEvent(ServerChannelJson data) {
+		for (UserData userData : getUsers().values()) {
+			User user = userData.getUser();
+			if (user != null) user.sendChannelCreatedEvent(data);
+		}
+	}
+	
+	public void sendChannelRemovedEvent(ServerChannelJson data) {
+		for (UserData userData : getUsers().values()) {
+			User user = userData.getUser();
+			if (user != null) user.sendChannelRemovedEvent(data);
+		}
+	}
+	
+	public void sendUserAddedEvent(ServerUserJson data) {
+		for (UserData userData : getUsers().values()) {
+			User user = userData.getUser();
+			if (user != null) user.sendUserAddedEvent(data);
+		}
+	}
+	
+	public void sendUserRemovedEvent(ServerUserJson data) {
+		for (UserData userData : getUsers().values()) {
+			User user = userData.getUser();
+			if (user != null) user.sendUserRemovedEvent(data);
 		}
 	}
 	

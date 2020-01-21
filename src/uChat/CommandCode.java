@@ -27,7 +27,11 @@ public enum CommandCode {
 	FRIEND_REMOVE(45), 			FRIEND_REMOVE_ACK(46),
 	HEARTBEAT(47),				HEARTBEAT_ACK(48),
 	
-	EVENT_MESSAGE(49);
+	EVENT_MESSAGE(49),
+	EVENT_CHANNEL_CREATED(50),
+	EVENT_CHANNEL_REMOVED(51),
+	EVENT_USER_ADDED(52),
+	EVENT_USER_REMOVED(53);
 	
 	private int value;
 	private CommandCode(int value) {

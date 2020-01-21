@@ -11,7 +11,7 @@ public class ServerAddUserACK implements ICommandACK{
 	private int user_id;
 	private String username;
 
-	public boolean isSuccess() { return isSuccess(); }
+	public boolean isSuccess() { return success; }
 	public int getServerID() { return server_id; }
 	public int getUserID() { return user_id; }
 	public String getUsername() { return username; }

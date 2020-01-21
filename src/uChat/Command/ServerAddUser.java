@@ -14,11 +14,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
+import uChat.Server;
 import uChat.User;
 import uChat.UserData;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ServerAddUserACK;
 import uChat.Command.ACK.Error.InternalServerErrorACK;
+import uChat.Json.ServerUserJson;
 
 public class ServerAddUser implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -65,6 +67,11 @@ public class ServerAddUser implements ICommand {
 			// Commit DB connection
 			connection.commit();
 			connection.close();
+			
+			// Event: USER_ADDED
+			Server server = new Server(getServerID());
+			server.sendUserAddedEvent(new ServerUserJson(getServerID() ,userData.getID(), userData.getUsername()));
+			
 			return new ServerAddUserACK(getServerID(), userData.getID(), userData.getUsername());
 				
 		} catch (Exception e) {

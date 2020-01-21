@@ -15,10 +15,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import uChat.CommandCode;
+import uChat.Server;
 import uChat.User;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.ChannelCreateACK;
 import uChat.Command.ACK.Error.InternalServerErrorACK;
+import uChat.Json.ServerChannelJson;
 
 public class ChannelCreate implements ICommand {
 	private static final long serialVersionUID = 1L;
@@ -61,14 +63,18 @@ public class ChannelCreate implements ICommand {
 			ResultSet res = statement.getGeneratedKeys();
 			res.next();
 			int channelID = res.getInt(1);
-			int serverID = getServerID();
 			res.close();
 			statement.close();
 			
 			// Commit DB connection
 			connection.commit();
 			connection.close();
-			return new ChannelCreateACK(serverID, channelID, getChannelName());
+			
+			// Event: CHANNEL_CREATED
+			Server server = new Server(getServerID());
+			server.sendChannelCreatedEvent(new ServerChannelJson(getServerID(), channelID, getChannelName()));
+			
+			return new ChannelCreateACK(getServerID(), channelID, getChannelName());
 				
 		} catch (Exception e) {
 			if (connection != null) {

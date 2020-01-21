@@ -17,7 +17,6 @@ import com.google.gson.JsonElement;
 import uChat.CommandCode;
 import uChat.Server;
 import uChat.User;
-import uChat.UserData;
 import uChat.Command.ACK.ChannelMessageACK;
 import uChat.Command.ACK.ICommandACK;
 import uChat.Command.ACK.Error.InternalServerErrorACK;
@@ -74,14 +73,9 @@ public class ChannelMessage implements ICommand {
 			connection.close();
 			connection = null;
 			
-			// Event: send message
-			MessageJson message = new MessageJson(messageID, getServerID(), getChannelID(), user.getID(), getMessage());
-			
+			// Event: MESSAGE
 			Server server = new Server(getServerID());
-			for (UserData userData : server.getUsers().values()) {
-				User usr = userData.getUser();
-				if (usr != null) usr.sendMessage(message);
-			}
+			server.sendMessageEvent(new MessageJson(messageID, getServerID(), getChannelID(), user.getID(), getMessage()));
 			
 			return new ChannelMessageACK(getServerID(), getChannelID(), messageID, getMessage());
 				
