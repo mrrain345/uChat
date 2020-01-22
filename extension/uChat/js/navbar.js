@@ -39,7 +39,9 @@ function nav_select(server, channel) {
 	$('.nav-server:not(.active)').each(function() {
 		$(this).find('.nav-channels').slideUp(slideDuration);
 		$(this).removeClass('show');
-	});
+  });
+  
+  $('#message-box').addClass('show');
 }
 
 function navbar_setup() {
