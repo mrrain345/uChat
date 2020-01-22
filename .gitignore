@@ -15,7 +15,6 @@ WebContent/META-INF/context.xml
 .mtj.tmp/
 
 # Package Files #
-*.war
 *.nar
 *.ear
 *.zip
@@ -24,3 +23,6 @@ WebContent/META-INF/context.xml
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# extension public key
+extension/uChat.pem
