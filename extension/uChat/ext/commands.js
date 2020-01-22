@@ -1,4 +1,6 @@
-function CMD_UNKNOW(data) {}
+function CMD_UNKNOW(data) {
+  console.error(data);
+}
 
 function CMD_SERVER_SYNC_ACK(data) {
 	if (data.server_id !== messagesData.server_id || data.channel_id !== messagesData.channel_id) return;

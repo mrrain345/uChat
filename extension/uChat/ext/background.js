@@ -137,7 +137,11 @@ function wsSendMessage(command, session, message) {
 		session_id: session,
 		data: message
 	};
-	
+  
+  if (webSocket.readyState !== WebSocket.OPEN) {
+    wsConnect();
+  }
+
   webSocket.send(JSON.stringify(data));
   console.log("> ["+command+"]", message);
 }
@@ -174,7 +178,7 @@ function wsOnError(message) {
 }
 
 function wsConnect() {
-	webSocket = new WebSocket("ws://localhost:8080/api");
+	webSocket = new WebSocket(WEBSOCKET_URL);
 	
 	webSocket.onopen = wsOnOpen;
 	webSocket.onmessage = wsOnMessage;

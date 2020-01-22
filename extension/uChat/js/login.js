@@ -11,7 +11,7 @@ $(document).ready(function() {
 		
 		$.ajax({
 			type: 'POST',
-			url: 'http://localhost:8080/login',
+			url: `${SERVER_URL}/login`,
 			contentType: 'application/json',
 			crossDomain: true,
 			cache: false,
@@ -56,7 +56,7 @@ $(document).ready(function() {
 		
 		$.ajax({
 			type: 'POST',
-			url: 'http://localhost:8080/register',
+			url: `${SERVER_URL}/register`,
 			contentType: 'application/json',
 			crossDomain: true,
 			cache: false,

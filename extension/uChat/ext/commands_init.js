@@ -56,6 +56,6 @@ function command_callback(code, data) {
     case 52: return CMD_EVENT_USER_ADDED(data);
     case 53: return CMD_EVENT_USER_REMOVED(data);
     
-		default: return CMD_UNKDOW(data);
+		default: return CMD_UNKNOW(data);
 	}
 }

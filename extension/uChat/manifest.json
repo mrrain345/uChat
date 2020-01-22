@@ -4,10 +4,11 @@
 	"description": "Minimalist chat app",
 	"permissions": [
 		"storage",
-		"http://localhost:8080/"
+    "http://ublog.eu:8080/"
 	],
 	"background": {
 		"scripts": [
+      "config.js",
       "ext/servers.js",
       "ext/commands_init.js",
       "ext/commands.js",
