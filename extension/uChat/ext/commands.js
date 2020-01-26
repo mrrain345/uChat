@@ -91,7 +91,7 @@ function CMD_EVENT_USER_ADDED(data) {
     }
   }
 
-  servers_add(data.server_id);
+  wsCommand('SERVER_LIST', {});
 }
 
 function CMD_EVENT_USER_REMOVED(data) {}

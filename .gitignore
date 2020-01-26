@@ -26,3 +26,4 @@ hs_err_pid*
 
 # extension public key
 extension/uChat.pem
+extension/uChat.crx
